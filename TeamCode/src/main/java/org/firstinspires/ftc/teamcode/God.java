@@ -1,0 +1,353 @@
+/* Copyright (c) 2017 FIRST. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted (subject to the limitations in the disclaimer below) provided that
+ * the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list
+ * of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *
+ * Neither the name of FIRST nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import java.util.ArrayList;
+
+/**
+ * This file contains an example of an iterative (Non-Linear) "OpMode".
+ * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
+ * The names of OpModes appear on the menu of the FTC Driver Station.
+ * When an selection is made from the menu, the corresponding OpMode
+ * class is instantiated on the Robot Controller and executed.
+ * <p>
+ * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
+ * It includes all the skeletal structure that all iterative OpModes contain.
+ * <p>
+ * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ */
+
+@TeleOp(name = "God", group = "Iterative Opmode")
+public class God extends OpMode {
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor LF, LB, RF, RB,
+            UpDown, inout, holder,hanger = null;
+    private boolean UD, IO, hold,hang;
+
+    //ArrayList flag = new ArrayList();
+
+    public void check(DcMotor device,boolean flag,String name){
+        try {
+            device = hardwareMap.get(DcMotor.class,name);
+            device.setDirection(DcMotorSimple.Direction.FORWARD);
+            device.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            flag = true;
+        } catch (Exception p_exception) {
+            flag = false;
+            telemetry.addData(device.getDeviceName()+":", "not founded");
+        } finally {
+            if (flag) {
+                telemetry.addData(device.getDeviceName()+":", "inited");
+            }
+        }
+    }
+
+
+
+
+    public void UD_init() {
+        try {
+            UpDown = hardwareMap.get(DcMotor.class, "Updown");
+            UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
+            UpDown.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            UD = true;
+        } catch (Exception p_exception) {
+            UD = false;
+            telemetry.addData("Updown:", "not founded");
+        } finally {
+            if (UD) {
+                telemetry.addData("Updown:", "inited");
+            }
+        }
+    }
+
+    public void IO_init() {
+        try {
+            inout = hardwareMap.get(DcMotor.class, "inout");
+            inout.setDirection(DcMotorSimple.Direction.FORWARD);
+            inout.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            IO = true;
+        } catch (Exception p_exception) {
+            IO = false;
+            telemetry.addData("inout:", "not founded");
+        } finally {
+            if (IO) {
+                telemetry.addData("inout:", "inited");
+            }
+        }
+    }
+
+    public void hold_init() {
+        try {
+            holder = hardwareMap.get(DcMotor.class, "holder");
+            holder.setDirection(DcMotorSimple.Direction.FORWARD);
+            holder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hold = true;
+        } catch (Exception p_exception) {
+            hold = false;
+            telemetry.addData("holder:", "not founded");
+        } finally {
+            if (hold) {
+                telemetry.addData("holder:", "inited");
+            }
+        }
+    }
+
+    public void hang_init(){
+        try {
+            hanger = hardwareMap.get(DcMotor.class, "hanger");
+            hanger.setDirection(DcMotorSimple.Direction.FORWARD);
+            hanger.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hang = true;
+        } catch (Exception p_exception) {
+            hang = false;
+            telemetry.addData("hanger:", "not founded");
+        } finally {
+            if (hang) {
+                telemetry.addData("hanger:", "inited");
+            }
+        }
+    }
+
+
+    @Override
+    public void init() {
+        telemetry.addData("Status", "Start initialize");
+
+        LF = hardwareMap.get(DcMotor.class, "LF");
+        RB = hardwareMap.get(DcMotor.class, "RB");
+        RF = hardwareMap.get(DcMotor.class, "RF");
+        LB = hardwareMap.get(DcMotor.class, "LB");
+
+
+
+        LF.setDirection(DcMotor.Direction.FORWARD);
+        LB.setDirection(DcMotor.Direction.FORWARD);
+        RF.setDirection(DcMotor.Direction.REVERSE);
+        RB.setDirection(DcMotor.Direction.REVERSE);
+
+
+
+        UD_init();
+        IO_init();
+        hold_init();
+        hang_init();
+
+
+//            try {
+//                UpDown = hardwareMap.get(DcMotor.class, "Updown");
+//                UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
+//                UpDown.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                UD = true;
+//            } catch (Exception p_exception) {
+//                UD = false;
+//                telemetry.addData("Updown:", "not founded");
+//            } finally {
+//                if (UD) {
+//                    telemetry.addData("Updown:", "inited");
+//                }
+//            }
+//
+//
+//            try {
+//                inout = hardwareMap.get(DcMotor.class, "inout");
+//                inout.setDirection(DcMotorSimple.Direction.FORWARD);
+//                inout.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                IO = true;
+//            } catch (Exception p_exception) {
+//                IO = false;
+//                telemetry.addData("inout:", "not founded");
+//            } finally {
+//                if (IO) {
+//                    telemetry.addData("inout:", "inited");
+//                }
+//            }
+//
+//
+//
+//            try {
+//                holder = hardwareMap.get(DcMotor.class, "holder");
+//                holder.setDirection(DcMotorSimple.Direction.FORWARD);
+//                holder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                hold = true;
+//            } catch (Exception p_exception) {
+//                hold = false;
+//                telemetry.addData("holder:", "not founded");
+//            } finally {
+//                if (hold) {
+//                    telemetry.addData("holder:", "inited");
+//                }
+//            }
+//
+//
+//
+//            try {
+//                hanger = hardwareMap.get(DcMotor.class, "hanger");
+//                hanger.setDirection(DcMotorSimple.Direction.FORWARD);
+//                hanger.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                hang = true;
+//            } catch (Exception p_exception) {
+//                hang = false;
+//                telemetry.addData("hanger:", "not founded");
+//            } finally {
+//                if (hang) {
+//                    telemetry.addData("hanger:", "inited");
+//                }
+//            }
+
+
+
+
+        telemetry.addData("Status", "Initialized");
+
+
+    }
+
+
+    @Override
+    public void init_loop() {
+
+    }
+
+
+    @Override
+    public void start() {
+        runtime.reset();
+    }
+
+
+    @Override
+    public void loop() {
+
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double LFPower = gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x;
+        double LBPower = gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x;
+        double RFPower = gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x;
+        double RBPower = gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
+
+        LFPower = Range.clip(LFPower, -0.7, 0.7);
+        RFPower = Range.clip(RFPower, -0.7, 0.7);
+        LBPower = Range.clip(LBPower, -0.7, 0.7);
+        RBPower = Range.clip(RBPower, -0.7, 0.7);
+
+        LF.setPower(LFPower);
+        RF.setPower(RFPower);
+        LB.setPower(LBPower);
+        RB.setPower(RBPower);
+
+
+        if (UD) {
+            if (gamepad1.left_bumper) {  //Up
+//            UpDown.setTargetPosition(-5400);
+                UpDown.setPower(1);
+            } else if (gamepad1.right_bumper) { //down
+//            UpDown.setTargetPosition(-100);
+                UpDown.setPower(-1);
+            } else {
+                UpDown.setPower(0);
+            }
+        }
+
+
+        if (IO) {
+            if (gamepad1.left_trigger > 0.5) {  //in
+                inout.setPower(1);
+            } else if (gamepad1.right_trigger > 0.5) { //out
+                inout.setPower(-1);
+            } else {
+                inout.setPower(0);
+            }
+        }
+
+
+        if (hold) {
+            if (gamepad1.dpad_up) {
+                holder.setTargetPosition(-285);
+                holder.setPower(1);
+            } else if (gamepad1.dpad_left) {
+//                holder.setTargetPosition(-190);
+                holder.setPower(1);
+            } else if (gamepad1.dpad_down) {
+//                holder.setTargetPosition(0);
+                holder.setPower(-1);
+            }
+        }
+
+        if (hang){
+            if (gamepad1.dpad_right){
+                hanger.setPower(1);
+            }
+        }
+
+
+
+
+        telemetry.update();
+
+        telemetry.addData("LF Value", LF.getCurrentPosition());
+        telemetry.addData("LB Value", LB.getCurrentPosition());
+        telemetry.addData("RF Value", RF.getCurrentPosition());
+        telemetry.addData("RB Value", RB.getCurrentPosition());
+        telemetry.addData("RB Value", RB.getCurrentPosition());
+
+
+        telemetry.addData("Updown Value", UpDown.getCurrentPosition());
+        telemetry.addData("inout Value", inout.getCurrentPosition());
+        telemetry.addData("holder Value", holder.getCurrentPosition());
+
+
+    }
+
+    /*
+     * Code to run ONCE after the driver hits STOP
+     */
+    @Override
+    public void stop() {
+    }
+
+}

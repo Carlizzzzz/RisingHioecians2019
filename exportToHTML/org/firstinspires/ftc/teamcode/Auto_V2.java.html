@@ -1,0 +1,267 @@
+<html>
+<head>
+<title>Auto_V2.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); font-style: italic; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,0,128); font-weight: bold; }
+.s3 { color: rgb(128,128,128); font-style: italic; }
+.s4 { color: rgb(0,128,0); font-weight: bold; }
+.s5 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+Auto_V2.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">/* Copyright (c) 2017 FIRST. All rights reserved. 
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted (subject to the limitations in the disclaimer below) provided that 
+ * the following conditions are met: 
+ * 
+ * Redistributions of source code must retain the above copyright notice, this list 
+ * of conditions and the following disclaimer. 
+ * 
+ * Redistributions in binary form must reproduce the above copyright notice, this 
+ * list of conditions and the following disclaimer in the documentation and/or 
+ * other materials provided with the distribution. 
+ * 
+ * Neither the name of FIRST nor the names of its contributors may be used to endorse or 
+ * promote products derived from this software without specific prior written permission. 
+ * 
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS 
+ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
+ * &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ */</span><span class="s1"> 
+ 
+</span><span class="s2">package </span><span class="s1">org.firstinspires.ftc.teamcode; 
+ 
+</span><span class="s2">import </span><span class="s1">com.qualcomm.hardware.bosch.BNO055IMU; 
+</span><span class="s2">import </span><span class="s1">com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator; 
+</span><span class="s2">import </span><span class="s1">com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; 
+</span><span class="s2">import </span><span class="s1">com.qualcomm.robotcore.eventloop.opmode.TeleOp; 
+</span><span class="s2">import </span><span class="s1">com.qualcomm.robotcore.hardware.DcMotor; 
+</span><span class="s2">import </span><span class="s1">com.qualcomm.robotcore.util.ElapsedTime; 
+ 
+</span><span class="s0">/** 
+ * This file contains an minimal example of a Linear &quot;OpMode&quot;. An OpMode is a 'program' that runs in either 
+ * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu 
+ * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode 
+ * class is instantiated on the Robot Controller and executed. 
+ * </span><span class="s3">&lt;p&gt;</span><span class="s0"> 
+ * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot 
+ * It includes all the skeletal structure that all linear OpModes contain. 
+ * </span><span class="s3">&lt;p&gt;</span><span class="s0"> 
+ * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name. 
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list 
+ */</span><span class="s1"> 
+ 
+@TeleOp(name = </span><span class="s4">&quot;autoV2&quot;</span><span class="s1">, group = </span><span class="s4">&quot;Linear Opmode&quot;</span><span class="s1">) 
+</span><span class="s0">//@Disabled</span><span class="s1"> 
+</span><span class="s2">public class </span><span class="s1">Auto_V2 </span><span class="s2">extends </span><span class="s1">LinearOpMode { 
+ 
+    BNO055IMU gyro; 
+    </span><span class="s2">int </span><span class="s1">state = </span><span class="s5">0</span><span class="s1">; 
+    </span><span class="s2">int </span><span class="s1">goldPosition = -</span><span class="s5">1</span><span class="s1">; 
+    </span><span class="s2">private </span><span class="s1">ElapsedTime runtime = </span><span class="s2">new </span><span class="s1">ElapsedTime(); 
+    </span><span class="s2">private </span><span class="s1">AutoWheelBase autoWheelBase1; 
+    </span><span class="s2">private </span><span class="s1">DcMotor LF, LB, RF, RB, motor1, motor2 = </span><span class="s2">null</span><span class="s1">; 
+ 
+    @Override 
+    </span><span class="s2">public void </span><span class="s1">runOpMode() { 
+ 
+        GoldReconization goldReconization = </span><span class="s2">new </span><span class="s1">GoldReconization(hardwareMap); 
+        LF = hardwareMap.get(DcMotor.</span><span class="s2">class</span><span class="s1">, </span><span class="s4">&quot;LF&quot;</span><span class="s1">); 
+        RB = hardwareMap.get(DcMotor.</span><span class="s2">class</span><span class="s1">, </span><span class="s4">&quot;RB&quot;</span><span class="s1">); 
+        RF = hardwareMap.get(DcMotor.</span><span class="s2">class</span><span class="s1">, </span><span class="s4">&quot;RF&quot;</span><span class="s1">); 
+        LB = hardwareMap.get(DcMotor.</span><span class="s2">class</span><span class="s1">, </span><span class="s4">&quot;LB&quot;</span><span class="s1">); 
+</span><span class="s0">//        flip1 = hardwareMap.get(DcMotor.class, &quot;flip1&quot;);</span><span class="s1"> 
+</span><span class="s0">//        flip2 = hardwareMap.get(DcMotor.class, &quot;flip2&quot;);</span><span class="s1"> 
+        BNO055IMU.Parameters parameters = </span><span class="s2">new </span><span class="s1">BNO055IMU.Parameters(); 
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES; 
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC; 
+        parameters.loggingEnabled = </span><span class="s2">false</span><span class="s1">; 
+        parameters.accelerationIntegrationAlgorithm = </span><span class="s2">new </span><span class="s1">JustLoggingAccelerationIntegrator(); 
+ 
+ 
+        gyro = hardwareMap.get(BNO055IMU.</span><span class="s2">class</span><span class="s1">, </span><span class="s4">&quot;imu&quot;</span><span class="s1">); 
+        gyro.initialize(parameters); 
+        LF.setDirection(DcMotor.Direction.FORWARD); 
+        LB.setDirection(DcMotor.Direction.FORWARD); 
+        RF.setDirection(DcMotor.Direction.REVERSE); 
+        RB.setDirection(DcMotor.Direction.REVERSE); 
+</span><span class="s0">//        flip1.setDirection(DcMotor.Direction.FORWARD);</span><span class="s1"> 
+</span><span class="s0">//        flip2.setDirection(DcMotor.Direction.REVERSE);</span><span class="s1"> 
+ 
+        autoWheelBase1 = </span><span class="s2">new </span><span class="s1">AutoWheelBase(LF, LB, RF, RB, gyro, </span><span class="s5">0.6</span><span class="s1">, </span><span class="s5">0</span><span class="s1">, </span><span class="s5">0</span><span class="s1">, </span><span class="s5">0</span><span class="s1">); 
+ 
+ 
+        telemetry.addData(</span><span class="s4">&quot;&gt;&quot;</span><span class="s1">, </span><span class="s4">&quot;Press Play to start tracking&quot;</span><span class="s1">); 
+        telemetry.update(); 
+        waitForStart(); 
+ 
+        </span><span class="s2">if </span><span class="s1">(opModeIsActive()) { 
+            </span><span class="s2">if </span><span class="s1">(goldReconization.tfod != </span><span class="s2">null</span><span class="s1">) { 
+                goldReconization.tfod.activate(); 
+            } 
+            </span><span class="s2">while </span><span class="s1">(opModeIsActive()) { 
+                autoWheelBase1.compute(); 
+                </span><span class="s2">if </span><span class="s1">(state == </span><span class="s5">0</span><span class="s1">) { 
+                    </span><span class="s2">if</span><span class="s1">(goldReconization.startReconizing(telemetry).equals(</span><span class="s4">&quot;Left&quot;</span><span class="s1">)){ 
+                        goldPosition = </span><span class="s5">1</span><span class="s1">; 
+                        state = </span><span class="s5">1</span><span class="s1">; 
+                    }</span><span class="s2">else if</span><span class="s1">(goldReconization.startReconizing(telemetry).equals(</span><span class="s4">&quot;Center&quot;</span><span class="s1">)) { 
+                        goldPosition = </span><span class="s5">2</span><span class="s1">; 
+                        state = </span><span class="s5">1</span><span class="s1">; 
+                    } </span><span class="s2">else if</span><span class="s1">(goldReconization.startReconizing(telemetry).equals(</span><span class="s4">&quot;Right&quot;</span><span class="s1">)) { 
+                        goldPosition = </span><span class="s5">3</span><span class="s1">; 
+                        state = </span><span class="s5">1</span><span class="s1">; 
+                    } 
+                }</span><span class="s2">else if </span><span class="s1">(state == </span><span class="s5">1</span><span class="s1">){ 
+                    </span><span class="s0">//Release robot</span><span class="s1"> 
+                    autoWheelBase1.forward(-</span><span class="s5">600</span><span class="s1">); 
+                    state = </span><span class="s5">2</span><span class="s1">; 
+                } 
+                </span><span class="s2">else if</span><span class="s1">(state == </span><span class="s5">2</span><span class="s1">){ 
+                    autoWheelBase1.forwardUpdate(); 
+                    </span><span class="s2">if</span><span class="s1">(autoWheelBase1.state == </span><span class="s5">4</span><span class="s1">) { 
+                        state = </span><span class="s5">3</span><span class="s1">; 
+                    } 
+                }</span><span class="s2">else if</span><span class="s1">(state == </span><span class="s5">3</span><span class="s1">){ 
+                    resetEncoder(); 
+                    autoWheelBase1.compute(); 
+                    </span><span class="s2">if</span><span class="s1">(goldPosition==</span><span class="s5">1</span><span class="s1">){ 
+                        autoWheelBase1.sideway(-</span><span class="s5">1700</span><span class="s1">); 
+                        state = </span><span class="s5">4</span><span class="s1">; 
+                    }</span><span class="s2">else if</span><span class="s1">(goldPosition==</span><span class="s5">3</span><span class="s1">){ 
+                        autoWheelBase1.sideway(</span><span class="s5">2000</span><span class="s1">); 
+                        state = </span><span class="s5">4</span><span class="s1">; 
+                    }</span><span class="s2">else if</span><span class="s1">(goldPosition== </span><span class="s5">2</span><span class="s1">){ 
+                        autoWheelBase1.sideway(</span><span class="s5">1</span><span class="s1">); 
+                        state = </span><span class="s5">4</span><span class="s1">; 
+                    } 
+                }</span><span class="s2">else if</span><span class="s1">(state == </span><span class="s5">4</span><span class="s1">){ 
+                    autoWheelBase1.sidewayUpdate(); 
+                    </span><span class="s2">if</span><span class="s1">(autoWheelBase1.state == </span><span class="s5">4</span><span class="s1">) { 
+                        state = </span><span class="s5">5</span><span class="s1">; 
+                    } 
+                }</span><span class="s2">else if</span><span class="s1">(state == </span><span class="s5">5</span><span class="s1">){ 
+                    resetEncoder(); 
+                    autoWheelBase1.compute(); 
+                    autoWheelBase1.forward(-</span><span class="s5">1000</span><span class="s1">); 
+                    state = </span><span class="s5">6</span><span class="s1">; 
+                }</span><span class="s2">else if</span><span class="s1">(state == </span><span class="s5">6</span><span class="s1">){ 
+                    autoWheelBase1.forwardUpdate(); 
+                    </span><span class="s2">if</span><span class="s1">(autoWheelBase1.state==</span><span class="s5">4</span><span class="s1">) { 
+                        state = </span><span class="s5">7</span><span class="s1">; 
+                    } 
+                }</span><span class="s2">else if</span><span class="s1">(state == </span><span class="s5">7</span><span class="s1">){ 
+                    resetEncoder(); 
+                    autoWheelBase1.compute(); 
+                    autoWheelBase1.forward(</span><span class="s5">600</span><span class="s1">); 
+                    state = </span><span class="s5">8</span><span class="s1">; 
+                } </span><span class="s2">else if </span><span class="s1">(state == </span><span class="s5">8</span><span class="s1">) { 
+                    autoWheelBase1.forwardUpdate(); 
+                    </span><span class="s2">if </span><span class="s1">(autoWheelBase1.state == </span><span class="s5">4</span><span class="s1">) { 
+                        state = </span><span class="s5">9</span><span class="s1">; 
+                    } 
+                } </span><span class="s2">else if </span><span class="s1">(state == </span><span class="s5">9</span><span class="s1">) { 
+                    autoWheelBase1.sideway(</span><span class="s5">2000</span><span class="s1">); 
+                    state = </span><span class="s5">10</span><span class="s1">; 
+                } </span><span class="s2">else if </span><span class="s1">(state == </span><span class="s5">10</span><span class="s1">) { 
+                    autoWheelBase1.sidewayUpdate(); 
+                    </span><span class="s2">if </span><span class="s1">(autoWheelBase1.state == </span><span class="s5">4</span><span class="s1">) { 
+                        state = </span><span class="s5">11</span><span class="s1">; 
+                    } 
+                } </span><span class="s2">else if </span><span class="s1">(state == </span><span class="s5">11</span><span class="s1">) { 
+                    autoWheelBase1.forward(</span><span class="s5">1500</span><span class="s1">); 
+                    state = </span><span class="s5">12</span><span class="s1">; 
+                } </span><span class="s2">else if </span><span class="s1">(state == </span><span class="s5">12</span><span class="s1">) { 
+                    autoWheelBase1.forwardUpdate(); 
+                    </span><span class="s2">if </span><span class="s1">(autoWheelBase1.state == </span><span class="s5">4</span><span class="s1">) { 
+                        state = </span><span class="s5">13</span><span class="s1">; 
+                    } 
+                }</span><span class="s2">else if </span><span class="s1">(state == </span><span class="s5">13</span><span class="s1">){ 
+                    </span><span class="s0">//release servo</span><span class="s1"> 
+                    state = </span><span class="s5">14</span><span class="s1">; 
+                }</span><span class="s2">else  if </span><span class="s1">(state == </span><span class="s5">14</span><span class="s1">){ 
+                    autoWheelBase1.forward(</span><span class="s5">3500</span><span class="s1">); 
+                    state = </span><span class="s5">15</span><span class="s1">; 
+                }</span><span class="s2">else  if </span><span class="s1">(state ==</span><span class="s5">15</span><span class="s1">){ 
+                    autoWheelBase1.forwardUpdate(); 
+                    </span><span class="s2">if </span><span class="s1">(autoWheelBase1.state == </span><span class="s5">4</span><span class="s1">){ 
+                        state = </span><span class="s5">16</span><span class="s1">; 
+                    } 
+                } 
+                </span><span class="s0">/*else if(state == 11){ 
+                    autoWheelBase1.turn(180); 
+                    state =12; 
+                }else if(state == 12){ 
+                    autoWheelBase1.turnUpdate(); 
+                    if(autoWheelBase1.state==4){ 
+                        state =13; 
+                    } 
+                }else if (state == 13){ 
+                    autoWheelBase1.sideway(); 
+                    state = 14; 
+                }else if(state == 14){ 
+                    autoWheelBase1.sidewayUpdate(); 
+                    if(autoWheelBase1.state == 4){ 
+                        state = 15; 
+                    } 
+                }else if(state == 15){ 
+                    autoWheelBase1.forward(); 
+                    state = 16; 
+                }else if (state == 19){ 
+                    //release servo 
+                    state = 20; 
+                }else if(state == 20){ 
+                    autoWheelBase1.forward(); 
+                    state = 21; 
+                }else if(state == 21){ 
+                    autoWheelBase1.forwardUpdate(); 
+                    if(autoWheelBase1.state == 4){ 
+                        state = 22; 
+                    } 
+                }*/</span><span class="s1"> 
+                telemetry.addData(</span><span class="s4">&quot;base state&quot;</span><span class="s1">, autoWheelBase1.state); 
+                telemetry.addData(</span><span class="s4">&quot;state&quot;</span><span class="s1">, state); 
+                telemetry.addData(</span><span class="s4">&quot;s&quot;</span><span class="s1">, autoWheelBase1.s); 
+                telemetry.addData(</span><span class="s4">&quot;sn&quot;</span><span class="s1">, autoWheelBase1.sn); 
+                telemetry.addData(</span><span class="s4">&quot;position: &quot;</span><span class="s1">, goldReconization.startReconizing(telemetry)); 
+                telemetry.addData(</span><span class="s4">&quot;Position&quot;</span><span class="s1">, goldPosition); 
+                telemetry.update(); 
+            } 
+        } 
+    } 
+ 
+    </span><span class="s2">public void </span><span class="s1">resetEncoder() { 
+        LF.setMode(DcMotor.RunMode.RESET_ENCODERS); 
+        LB.setMode(DcMotor.RunMode.RESET_ENCODERS); 
+        RF.setMode(DcMotor.RunMode.RESET_ENCODERS); 
+        RB.setMode(DcMotor.RunMode.RESET_ENCODERS); 
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER); 
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER); 
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER); 
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER); 
+    } 
+ 
+} 
+ 
+</span></pre>
+</body>
+</html>
