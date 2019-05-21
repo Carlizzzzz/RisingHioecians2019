@@ -61,32 +61,27 @@ public class God extends setting {
     // Declare OpMode members.
 
 
-
-
-
-
     @Override
     public void init() {
         telemetry.addData("Status", "Start initialize");
 
 
-//        LF = hardwareMap.get(DcMotor.class, "LF");
-//        RB = hardwareMap.get(DcMotor.class, "RB");
-//        RF = hardwareMap.get(DcMotor.class, "RF");
-//        LB = hardwareMap.get(DcMotor.class, "LB");
-//
-//
-//
-//        LF.setDirection(DcMotor.Direction.FORWARD);
-//        LB.setDirection(DcMotor.Direction.FORWARD);
-//        RF.setDirection(DcMotor.Direction.REVERSE);
-//        RB.setDirection(DcMotor.Direction.REVERSE);
+        LF = hardwareMap.get(DcMotor.class, "LF");
+        RB = hardwareMap.get(DcMotor.class, "RB");
+        RF = hardwareMap.get(DcMotor.class, "RF");
+        LB = hardwareMap.get(DcMotor.class, "LB");
+
+
+        LF.setDirection(DcMotor.Direction.FORWARD);
+        LB.setDirection(DcMotor.Direction.FORWARD);
+        RF.setDirection(DcMotor.Direction.REVERSE);
+        RB.setDirection(DcMotor.Direction.REVERSE);
 
 
         UD_init();
         IO_init();
-        hold_init();
         hang_init();
+        hold_init();
 
 
         telemetry.addData("Status", "Initialized");
@@ -103,31 +98,32 @@ public class God extends setting {
 
     @Override
     public void start() {
-        runtime.reset();}
+        runtime.reset();
+    }
 
 
     @Override
     public void loop() {
-//
-//        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
-//        double LFPower = gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x;
-//        double LBPower = gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x;
-//        double RFPower = gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x;
-//        double RBPower = gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
-//
-//        LFPower = Range.clip(LFPower, -0.7, 0.7);
-//        RFPower = Range.clip(RFPower, -0.7, 0.7);
-//        LBPower = Range.clip(LBPower, -0.7, 0.7);
-//        RBPower = Range.clip(RBPower, -0.7, 0.7);
-//
-//        LF.setPower(LFPower);
-//        RF.setPower(RFPower);
-//        LB.setPower(LBPower);
-//        RB.setPower(RBPower);
+
+        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double LFPower = gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x;
+        double LBPower = gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x;
+        double RFPower = gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x;
+        double RBPower = gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
+
+        LFPower = Range.clip(LFPower, -0.7, 0.7);
+        RFPower = Range.clip(RFPower, -0.7, 0.7);
+        LBPower = Range.clip(LBPower, -0.7, 0.7);
+        RBPower = Range.clip(RBPower, -0.7, 0.7);
+
+        LF.setPower(LFPower);
+        RF.setPower(RFPower);
+        LB.setPower(LBPower);
+        RB.setPower(RBPower);
 
         telemetry.update();
 
@@ -142,7 +138,7 @@ public class God extends setting {
             } else {
                 UpDown.setPower(0);
             }
-            telemetry.addData("Updown Value", UpDown.getCurrentPosition());
+            telemetry.addData("updown Value", UpDown.getCurrentPosition());
         }
 
 
@@ -160,22 +156,34 @@ public class God extends setting {
 
         if (hold) {
             if (gamepad1.dpad_up) {
-                holder.setTargetPosition(-285);
-                holder.setPower(0.5);
+                holder.setTargetPosition(-550);
+                holder.setPower(0.7);
             } else if (gamepad1.dpad_left) {
-                holder.setTargetPosition(-190);
-                holder.setPower(0.5);
+                if (holder.getCurrentPosition() == -330) {
+                    holder.setPower(0);
+                } else {
+                    holder.setTargetPosition(-330);
+                    holder.setPower(0.7);
+                }
             } else if (gamepad1.dpad_down) {
 
-                holder.setTargetPosition(0);
-                holder.setPower(-1);
+                holder.setTargetPosition(10);
+                holder.setPower(-0.7);
+            } else {
+                holder.setPower(0);
             }
             telemetry.addData("holder Value", holder.getCurrentPosition());
         }
 
         if (hang) {
             if (gamepad1.dpad_right) {
-                hanger.setPower(1);
+                if (hanger.getPower() == 0) {
+                    hanger.setPower(1);
+                } else if (hanger.getPower() == 1) {
+                    hanger.setPower(0);
+                }
+            } else {
+                hanger.setPower(0);
             }
             telemetry.addData("hanger Value", hanger.getCurrentPosition());
         }
@@ -191,10 +199,10 @@ public class God extends setting {
         }
 
 
-//        telemetry.addData("LF Value", LF.getCurrentPosition());
-//        telemetry.addData("LB Value", LB.getCurrentPosition());
-//        telemetry.addData("RF Value", RF.getCurrentPosition());
-//        telemetry.addData("RB Value", RB.getCurrentPosition());
+        telemetry.addData("LF Value", LF.getCurrentPosition());
+        telemetry.addData("LB Value", LB.getCurrentPosition());
+        telemetry.addData("RF Value", RF.getCurrentPosition());
+        telemetry.addData("RB Value", RB.getCurrentPosition());
 
 
     }
@@ -207,6 +215,5 @@ public class God extends setting {
     }
 
 
-
-
 }
+
