@@ -65,46 +65,85 @@ public class Auto_V1 extends LinearOpMode {
     int goldPosition = -1;
     private ElapsedTime runtime = new ElapsedTime();
     private AutoWheelBase autoWheelBase1;
-    private DcMotor LF, LB, RF, RB, motor1, motor2, motor3 = null;
-    Servo upServo1, upServo2, mark;
-    CRServo roll, pull;
+    private DcMotor LF, LB, RF, RB,
+            UpDown, inout, holder,hanger = null;
+    private boolean UD,IO,hold,hang;
     double timeCounter = 0;
 
-    void openloopLift(double power) {
-        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motor1.setPower(power);
-        motor2.setPower(power);
-        motor3.setPower(power);
+
+    public void UD_init() {
+        try {
+            UpDown = hardwareMap.get(DcMotor.class, "updown");
+            UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
+            UpDown.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            UD = true;
+        } catch (Exception p_exception) {
+            UD = false;
+            telemetry.addData("Updown:", "not founded");
+        } finally {
+            if (UD) {
+                telemetry.addData("Updown:", "inited");
+            }
+        }
     }
 
-    void posCtrlLift(int pos) {
-        motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor1.setTargetPosition(pos);
-        motor2.setTargetPosition(pos);
-        motor3.setTargetPosition(pos);
+    public void IO_init() {
+        try {
+            inout = hardwareMap.get(DcMotor.class, "inout");
+            inout.setDirection(DcMotorSimple.Direction.FORWARD);
+            inout.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            IO = true;
+        } catch (Exception p_exception) {
+            IO = false;
+            telemetry.addData("inout:", "not founded");
+        } finally {
+            if (IO) {
+                telemetry.addData("inout:", "inited");
+            }
+        }
+    }
+
+    public void hold_init() {
+        try {
+            holder = hardwareMap.get(DcMotor.class, "holder");
+            holder.setDirection(DcMotorSimple.Direction.FORWARD);
+            holder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hold = true;
+        } catch (Exception p_exception) {
+            hold = false;
+            telemetry.addData("holder:", "not founded");
+        } finally {
+            if (hold) {
+                telemetry.addData("holder:", "inited");
+            }
+        }
+    }
+
+    public void hang_init(){
+        try {
+            hanger = hardwareMap.get(DcMotor.class, "hanger");
+            hanger.setDirection(DcMotorSimple.Direction.FORWARD);
+            hanger.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hang = true;
+        } catch (Exception p_exception) {
+            hang = false;
+            telemetry.addData("hanger:", "not founded");
+        } finally {
+            if (hang) {
+                telemetry.addData("hanger:", "inited");
+            }
+        }
     }
 
     @Override
     public void runOpMode() {
+
+        //checker = new check (UpDown, inout, holder,hanger);
+
         LF = hardwareMap.get(DcMotor.class, "LF");
         RB = hardwareMap.get(DcMotor.class, "RB");
         RF = hardwareMap.get(DcMotor.class, "RF");
         LB = hardwareMap.get(DcMotor.class, "LB");
-        motor1 = hardwareMap.get(DcMotor.class, "motor1");
-        motor2 = hardwareMap.get(DcMotor.class, "motor2");
-        mark = hardwareMap.get(Servo.class, "mark");
-
-        upServo1 = hardwareMap.get(Servo.class, "upServo1");
-        upServo2 = hardwareMap.get(Servo.class, "upServo2");
-        roll = hardwareMap.get(CRServo.class, "roll");
-        pull = hardwareMap.get(CRServo.class, "pull");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -118,21 +157,23 @@ public class Auto_V1 extends LinearOpMode {
         LB.setDirection(DcMotor.Direction.FORWARD);
         RF.setDirection(DcMotor.Direction.REVERSE);
         RB.setDirection(DcMotor.Direction.REVERSE);
-        motor1.setDirection(DcMotor.Direction.FORWARD);
-        motor2.setDirection(DcMotor.Direction.REVERSE);
+
+        UD_init();
+        IO_init();
+        hold_init();
+        hang_init();
+
+        hanger.setPower(1);
+
 
         GoldReconization goldReconization = new GoldReconization(hardwareMap);
         autoWheelBase1 = new AutoWheelBase(LF, LB, RF, RB, gyro, 0.6, 0, 0, 0);
         resetEncoder();
 
-        openloopLift(0);
-        upServo1.setPosition(0);
-        upServo2.setPosition(1);
-        mark.setPosition(0.5);
+
 
         telemetry.addData(">", "Press Play to start tracking");
-        telemetry.addData("motor1", motor1.getCurrentPosition());
-        telemetry.addData("motor2", motor2.getCurrentPosition());
+
         telemetry.update();
         waitForStart();
         state = 1;
@@ -145,92 +186,97 @@ public class Auto_V1 extends LinearOpMode {
             while (opModeIsActive()) {
                 autoWheelBase1.compute();
                 if (state == 0) {
-                    openloopLift(0);
+
                     if (goldReconization.startReconizing(telemetry).equals("Left")) {
                         goldPosition = 1;
-                        state = 1000;
+                        state = 1;
                         goldReconization.endDetect();
                     } else if (goldReconization.startReconizing(telemetry).equals("Center")) {
                         goldPosition = 2;
-                        state = 1000;
+                        state = 1;
                         goldReconization.endDetect();
                     } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
                         goldPosition = 3;
-                        state = 1000;
+                        state = 1;
                         goldReconization.endDetect();
                     } else if (getRuntime() - timeCounter > 10) {
                         goldPosition = 2;
-                        state = 1000;
+                        state = 1;
                     }
-                } else if (state == 1000) {
+                } else if (state == 1) {
 
-                    upServo1.setPosition(0.5);
-                    upServo2.setPosition(0.5);
+                    hanger.setPower(-1);
 
                     timeCounter = this.getRuntime();
 
-                    state = 1001;
-                } else if (state == 1001) {
+                    state = 2;
+                } else if (state == 2) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     if (this.getRuntime() - timeCounter > 2) {
-                        autoWheelBase1.forward(500);
-                        state = 1002;
+                        autoWheelBase1.sideway(300);
+                        state = 3;
                     }
-                } else if (state == 1002) {
-                    autoWheelBase1.forwardUpdate();
+                } else if (state == 3) {
+                    autoWheelBase1.sidewayUpdate();
                     //motor1.setPower(.7);
                     //motor2.setPower(.7);
                     if (autoWheelBase1.state == 4) {
                         //Reserved
-                        state = 1003;
+                        state = 4;
                         //motor1.setPower(0.1);
                         //motor2.setPower(0.1);
                         resetEncoder();
                         autoWheelBase1.compute();
-                        autoWheelBase1.sideway(-500);
-                        openloopLift(-0.1);
-                    }
+                        autoWheelBase1.forward(500);
 
-                } else if (state == 1003) {
-                    autoWheelBase1.sidewayUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 1004;
-                        openloopLift(0);
                     }
-//
-                } else if (state == 1004) {
-//                    motorBehavior.setPosition(2289);
-                    gyro.initialize(parameters);
-                    resetEncoder();
-                    autoWheelBase1.compute();
-                    autoWheelBase1.forward(-800);
-                    state = 2;
-                } else if (state == 2) {
+                }else if (state == 4){
                     autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state == 4) {
-                        state = 3;
+                        state = 5;
+
                     }
-                } else if (state == 3) {
+                }else if (state == 5){
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.sideway(500);
+                    state = 6;
+                }else if (state == 6){
+                    autoWheelBase1.sidewayUpdate();
+                    if (autoWheelBase1.state == 4) {
+                        state = 7;
+
+                    }
+                } else if (state == 7) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     if (goldPosition == 1) {
-                        autoWheelBase1.sideway(-1700);
-                        state = 4;
+                        resetEncoder();
+                        autoWheelBase1.compute();
+                        autoWheelBase1.forward(300);
+                        state = 8;
                     } else if (goldPosition == 3) {
-                        autoWheelBase1.sideway(2000);
-                        state = 4;
+                        resetEncoder();
+                        autoWheelBase1.compute();
+                        autoWheelBase1.forward(-2300);
+                        state = 8;
                     } else if (goldPosition == 2) {
-                        autoWheelBase1.sideway(1);
-                        state = 4;
+                        resetEncoder();
+                        autoWheelBase1.compute();
+                        autoWheelBase1.forward(-250);
+                        state = 8;
                     }
-                } else if (state == 4) {
-                    autoWheelBase1.sidewayUpdate();
+                } else if (state == 8) {
+                    autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state == 4) {
-                        state = 5;
+                        state = 9;
                     }
+
 //                } else if (state == 4) {
-//                    autoWheelBase1.forward(-1000);
+//                    resetEncoder();
+//                    autoWheelBase1.compute();
+//                    autoWheelBase1.forward(-3000);
 //                    if (autoWheelBase1.state == 4) {
 //                        state = 5;
 //                    }
@@ -239,64 +285,88 @@ public class Auto_V1 extends LinearOpMode {
 //                    if (autoWheelBase1.state == 4) {
 //                        state = 5;
 //                    }
-                } else if (state == 5) {
-                    autoWheelBase1.forward(1000);
-                    state = 6;
-                } else if (state == 6) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 7;
-                    }
-                } else if (state == 7) {
-                    autoWheelBase1.sideway(-800);
-                    state = 8;
-                } else if (state == 8) {
+                } else if (state == 9) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.sideway(-3000);
+                    state = 10;
+                } else if (state == 10) {
                     autoWheelBase1.sidewayUpdate();
                     if (autoWheelBase1.state == 4) {
-                        state = 9;
-                    }
-                } else if (state == 9) {
-                    autoWheelBase1.turn(-150);
-                    state = 10;
-                }else if (state == 10){
-                    autoWheelBase1.turnUpdate();
-                    if (autoWheelBase1.state==4){
                         state = 11;
                     }
-                }else if (state==11){
-                    autoWheelBase1.forward(800);
-                    state = 12;
-                }else if (state==12){
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state==4){
+                } else if (state == 11) {
+                    if (goldPosition==1){//left
+                        resetEncoder();
+                        autoWheelBase1.compute();
+                        autoWheelBase1.turn(60);//anti-clockwise
+                        state = 12;
+                    } else if (goldPosition==2){//centre
+                        resetEncoder();
+                        autoWheelBase1.compute();
+                        autoWheelBase1.turn(90);//anti-clockwise
+                        state = 12;
+                    }  else if (goldPosition==3){//right
+                        resetEncoder();
+                        autoWheelBase1.compute();
+                        autoWheelBase1.turn(150);//anti
+                        state = 12;
+                    }
+                } else if (state == 12) {
+                    autoWheelBase1.turnUpdate();
+                    if (autoWheelBase1.state == 4) {
                         state = 13;
                     }
-                } else if (state == 13) {
+                } else if (state==13){
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.forward(800);
+                    state = 14;
+                } else if (state==14){
                     autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        mark.setPosition(0);
-                        state = 14;
-                        mark.setPosition(1);
-                        timeCounter = getRuntime();
-                    }
-                } else if (state == 14) {
-                    mark.setPosition(0);
-                    if (getRuntime() - timeCounter > 1) {
+                    if (autoWheelBase1.state==4){
                         state = 15;
                     }
                 } else if (state == 15) {
+                    //mascot
+                    holder.setTargetPosition(0);
+                    holder.setPower(-1);
+                    state = 16;
+                    timeCounter = getRuntime();
+                } else if (state==16){
+                    //mascot---try to get it out from the pink box
+                    if (this.getRuntime()-timeCounter>2){
+                        state = 17;
+                        timeCounter=getRuntime();
+                    }
+                } else if (state==17){
+                    //mascot---putted,holder back
+                    if (this.getRuntime()-timeCounter>1){
+                        holder.setTargetPosition(-285);
+                        holder.setPower(1);
+                        state =18;
+                    }
+                } else if (state == 18) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.turn(-135);
+                    state = 19;
+                }else if (state == 19){
+                    autoWheelBase1.turnUpdate();
+                    if (autoWheelBase1.state==4){
+                        state = 20;}
+                } else if (state == 20) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     autoWheelBase1.forward(-9000);
-                    state = 16;
-                } else if (state == 16) {
+                    state = 21;
+                } else if (state == 21) {
                     autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state == 4) {
-                        state = 17;
-//                        posCtrlLift(800);
+                        state = 22;
                         timeCounter = getRuntime();
                     }
-                }
+
 //                }else if (state == 28){
 //                    if (getRuntime() - timeCounter > 1){
 //                        pull.setPower(1);
@@ -326,20 +396,21 @@ public class Auto_V1 extends LinearOpMode {
         }
 
     }
+}
+
 
     public void resetEncoder() {
         LF.setMode(DcMotor.RunMode.RESET_ENCODERS);
         LB.setMode(DcMotor.RunMode.RESET_ENCODERS);
         RF.setMode(DcMotor.RunMode.RESET_ENCODERS);
         RB.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        motor1.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        motor2.setMode(DcMotor.RunMode.RESET_ENCODERS);
+
+
         LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
 }

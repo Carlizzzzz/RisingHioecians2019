@@ -41,7 +41,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import java.util.ArrayList;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -58,185 +57,36 @@ import java.util.ArrayList;
  */
 
 @TeleOp(name = "God", group = "Iterative Opmode")
-public class God extends OpMode {
+public class God extends setting {
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor LF, LB, RF, RB,
-            UpDown, inout, holder,hanger = null;
-    private boolean UD, IO, hold,hang;
-
-    //ArrayList flag = new ArrayList();
-
-    public void check(DcMotor device,boolean flag,String name){
-        try {
-            device = hardwareMap.get(DcMotor.class,name);
-            device.setDirection(DcMotorSimple.Direction.FORWARD);
-            device.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            flag = true;
-        } catch (Exception p_exception) {
-            flag = false;
-            telemetry.addData(device.getDeviceName()+":", "not founded");
-        } finally {
-            if (flag) {
-                telemetry.addData(device.getDeviceName()+":", "inited");
-            }
-        }
-    }
 
 
 
 
-    public void UD_init() {
-        try {
-            UpDown = hardwareMap.get(DcMotor.class, "Updown");
-            UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
-            UpDown.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            UD = true;
-        } catch (Exception p_exception) {
-            UD = false;
-            telemetry.addData("Updown:", "not founded");
-        } finally {
-            if (UD) {
-                telemetry.addData("Updown:", "inited");
-            }
-        }
-    }
-
-    public void IO_init() {
-        try {
-            inout = hardwareMap.get(DcMotor.class, "inout");
-            inout.setDirection(DcMotorSimple.Direction.FORWARD);
-            inout.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            IO = true;
-        } catch (Exception p_exception) {
-            IO = false;
-            telemetry.addData("inout:", "not founded");
-        } finally {
-            if (IO) {
-                telemetry.addData("inout:", "inited");
-            }
-        }
-    }
-
-    public void hold_init() {
-        try {
-            holder = hardwareMap.get(DcMotor.class, "holder");
-            holder.setDirection(DcMotorSimple.Direction.FORWARD);
-            holder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hold = true;
-        } catch (Exception p_exception) {
-            hold = false;
-            telemetry.addData("holder:", "not founded");
-        } finally {
-            if (hold) {
-                telemetry.addData("holder:", "inited");
-            }
-        }
-    }
-
-    public void hang_init(){
-        try {
-            hanger = hardwareMap.get(DcMotor.class, "hanger");
-            hanger.setDirection(DcMotorSimple.Direction.FORWARD);
-            hanger.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hang = true;
-        } catch (Exception p_exception) {
-            hang = false;
-            telemetry.addData("hanger:", "not founded");
-        } finally {
-            if (hang) {
-                telemetry.addData("hanger:", "inited");
-            }
-        }
-    }
 
 
     @Override
     public void init() {
         telemetry.addData("Status", "Start initialize");
 
-        LF = hardwareMap.get(DcMotor.class, "LF");
-        RB = hardwareMap.get(DcMotor.class, "RB");
-        RF = hardwareMap.get(DcMotor.class, "RF");
-        LB = hardwareMap.get(DcMotor.class, "LB");
 
-
-
-        LF.setDirection(DcMotor.Direction.FORWARD);
-        LB.setDirection(DcMotor.Direction.FORWARD);
-        RF.setDirection(DcMotor.Direction.REVERSE);
-        RB.setDirection(DcMotor.Direction.REVERSE);
-
+//        LF = hardwareMap.get(DcMotor.class, "LF");
+//        RB = hardwareMap.get(DcMotor.class, "RB");
+//        RF = hardwareMap.get(DcMotor.class, "RF");
+//        LB = hardwareMap.get(DcMotor.class, "LB");
+//
+//
+//
+//        LF.setDirection(DcMotor.Direction.FORWARD);
+//        LB.setDirection(DcMotor.Direction.FORWARD);
+//        RF.setDirection(DcMotor.Direction.REVERSE);
+//        RB.setDirection(DcMotor.Direction.REVERSE);
 
 
         UD_init();
         IO_init();
         hold_init();
         hang_init();
-
-
-//            try {
-//                UpDown = hardwareMap.get(DcMotor.class, "Updown");
-//                UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
-//                UpDown.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                UD = true;
-//            } catch (Exception p_exception) {
-//                UD = false;
-//                telemetry.addData("Updown:", "not founded");
-//            } finally {
-//                if (UD) {
-//                    telemetry.addData("Updown:", "inited");
-//                }
-//            }
-//
-//
-//            try {
-//                inout = hardwareMap.get(DcMotor.class, "inout");
-//                inout.setDirection(DcMotorSimple.Direction.FORWARD);
-//                inout.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                IO = true;
-//            } catch (Exception p_exception) {
-//                IO = false;
-//                telemetry.addData("inout:", "not founded");
-//            } finally {
-//                if (IO) {
-//                    telemetry.addData("inout:", "inited");
-//                }
-//            }
-//
-//
-//
-//            try {
-//                holder = hardwareMap.get(DcMotor.class, "holder");
-//                holder.setDirection(DcMotorSimple.Direction.FORWARD);
-//                holder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                hold = true;
-//            } catch (Exception p_exception) {
-//                hold = false;
-//                telemetry.addData("holder:", "not founded");
-//            } finally {
-//                if (hold) {
-//                    telemetry.addData("holder:", "inited");
-//                }
-//            }
-//
-//
-//
-//            try {
-//                hanger = hardwareMap.get(DcMotor.class, "hanger");
-//                hanger.setDirection(DcMotorSimple.Direction.FORWARD);
-//                hanger.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                hang = true;
-//            } catch (Exception p_exception) {
-//                hang = false;
-//                telemetry.addData("hanger:", "not founded");
-//            } finally {
-//                if (hang) {
-//                    telemetry.addData("hanger:", "inited");
-//                }
-//            }
-
-
 
 
         telemetry.addData("Status", "Initialized");
@@ -253,32 +103,33 @@ public class God extends OpMode {
 
     @Override
     public void start() {
-        runtime.reset();
-    }
+        runtime.reset();}
 
 
     @Override
     public void loop() {
+//
+//        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//        double LFPower = gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x;
+//        double LBPower = gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x;
+//        double RFPower = gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x;
+//        double RBPower = gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
+//
+//        LFPower = Range.clip(LFPower, -0.7, 0.7);
+//        RFPower = Range.clip(RFPower, -0.7, 0.7);
+//        LBPower = Range.clip(LBPower, -0.7, 0.7);
+//        RBPower = Range.clip(RBPower, -0.7, 0.7);
+//
+//        LF.setPower(LFPower);
+//        RF.setPower(RFPower);
+//        LB.setPower(LBPower);
+//        RB.setPower(RBPower);
 
-        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        double LFPower = gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x;
-        double LBPower = gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x;
-        double RFPower = gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x;
-        double RBPower = gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
-
-        LFPower = Range.clip(LFPower, -0.7, 0.7);
-        RFPower = Range.clip(RFPower, -0.7, 0.7);
-        LBPower = Range.clip(LBPower, -0.7, 0.7);
-        RBPower = Range.clip(RBPower, -0.7, 0.7);
-
-        LF.setPower(LFPower);
-        RF.setPower(RFPower);
-        LB.setPower(LBPower);
-        RB.setPower(RBPower);
+        telemetry.update();
 
 
         if (UD) {
@@ -291,6 +142,7 @@ public class God extends OpMode {
             } else {
                 UpDown.setPower(0);
             }
+            telemetry.addData("Updown Value", UpDown.getCurrentPosition());
         }
 
 
@@ -302,43 +154,47 @@ public class God extends OpMode {
             } else {
                 inout.setPower(0);
             }
+            telemetry.addData("inout Value", inout.getCurrentPosition());
         }
 
 
         if (hold) {
             if (gamepad1.dpad_up) {
                 holder.setTargetPosition(-285);
-                holder.setPower(1);
+                holder.setPower(0.5);
             } else if (gamepad1.dpad_left) {
-//                holder.setTargetPosition(-190);
-                holder.setPower(1);
+                holder.setTargetPosition(-190);
+                holder.setPower(0.5);
             } else if (gamepad1.dpad_down) {
-//                holder.setTargetPosition(0);
+
+                holder.setTargetPosition(0);
                 holder.setPower(-1);
             }
+            telemetry.addData("holder Value", holder.getCurrentPosition());
         }
 
-        if (hang){
-            if (gamepad1.dpad_right){
+        if (hang) {
+            if (gamepad1.dpad_right) {
                 hanger.setPower(1);
+            }
+            telemetry.addData("hanger Value", hanger.getCurrentPosition());
+        }
+
+        if (spin) {
+            if (gamepad1.b) {
+                spinner.setPower(1);
+            } else if (gamepad1.a) {
+                spinner.setPower(-1);
+            } else {
+                spinner.setPower(0);
             }
         }
 
 
-
-
-        telemetry.update();
-
-        telemetry.addData("LF Value", LF.getCurrentPosition());
-        telemetry.addData("LB Value", LB.getCurrentPosition());
-        telemetry.addData("RF Value", RF.getCurrentPosition());
-        telemetry.addData("RB Value", RB.getCurrentPosition());
-        telemetry.addData("RB Value", RB.getCurrentPosition());
-
-
-        telemetry.addData("Updown Value", UpDown.getCurrentPosition());
-        telemetry.addData("inout Value", inout.getCurrentPosition());
-        telemetry.addData("holder Value", holder.getCurrentPosition());
+//        telemetry.addData("LF Value", LF.getCurrentPosition());
+//        telemetry.addData("LB Value", LB.getCurrentPosition());
+//        telemetry.addData("RF Value", RF.getCurrentPosition());
+//        telemetry.addData("RB Value", RB.getCurrentPosition());
 
 
     }
@@ -349,5 +205,8 @@ public class God extends OpMode {
     @Override
     public void stop() {
     }
+
+
+
 
 }
