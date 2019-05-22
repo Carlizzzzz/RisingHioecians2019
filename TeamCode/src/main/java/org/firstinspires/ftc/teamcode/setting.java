@@ -22,22 +22,17 @@ import java.util.Map;
 public class setting extends OpMode{
     // Declare OpMode members.
     public ElapsedTime runtime = new ElapsedTime();
-    public DcMotor LF, LB, RF, RB,
+    public DcMotor
+            device,
+            LF, LB, RF, RB,
             UpDown, inout, holder, hanger = null;
-    public boolean UD, IO, hold, hang, spin;
+    public boolean UD, IO, hold, hang, spin,run,flag;
     public CRServo spinner;
+    public String name;
 
     @Override
     public void init() {
-//        telemetry.addData("Status", "Start initialize");
-//
-//
-//        UD_init();
-//        IO_init();
-//        hold_init();
-//        hang_init();
-//
-//        telemetry.addData("Status", "Initialized");
+
     }
 
 
@@ -61,64 +56,72 @@ public class setting extends OpMode{
         try {
             UpDown = hardwareMap.get(DcMotor.class, "updown");
             UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
-            UpDown.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            UpDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             UD = true;
         } catch (Exception p_exception) {
             UD = false;
-            telemetry.addData("Updown:", "not founded");
+            telemetry.addData("Updown", "not founded");
         } finally {
             if (UD) {
-                telemetry.addData("Updown:", "inited");
+                telemetry.addData("Updown", "inited");
             }
         }
+//        check(UpDown,UD,"updown");
+//        UpDown=device;
+//        UD=flag;
 
     }
     public void IO_init() {
         try {
             inout = hardwareMap.get(DcMotor.class, "inout");
             inout.setDirection(DcMotorSimple.Direction.FORWARD);
-            inout.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            inout.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             IO = true;
         } catch (Exception p_exception) {
             IO = false;
-            telemetry.addData("inout:", "not founded");
+            telemetry.addData("inout", "not founded");
         } finally {
             if (IO) {
-                telemetry.addData("inout:", "inited");
+                telemetry.addData("inout", "inited");
             }
         }
+//        check(inout,IO,"inout");
     }
 
     public void hold_init() {
         try {
             holder = hardwareMap.get(DcMotor.class, "holder");
             holder.setDirection(DcMotorSimple.Direction.FORWARD);
-            holder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            holder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hold = true;
         } catch (Exception p_exception) {
             hold = false;
-            telemetry.addData("holder:", "not founded");
+            telemetry.addData("holder", "not founded");
         } finally {
             if (hold) {
-                telemetry.addData("holder:", "inited");
+                telemetry.addData("holder", "inited");
             }
         }
+//        check(holder,hold,"holder");
+//        holder=device;
+//        hold=flag;
     }
 
     public void hang_init() {
         try {
             hanger = hardwareMap.get(DcMotor.class, "hanger");
             hanger.setDirection(DcMotorSimple.Direction.FORWARD);
-            hanger.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hang = true;
         } catch (Exception p_exception) {
             hang = false;
-            telemetry.addData("hanger:", "not founded");
+            telemetry.addData("hanger", "not founded");
         } finally {
             if (hang) {
-                telemetry.addData("hanger:", "inited");
+                telemetry.addData("hanger", "inited");
             }
         }
+//        check(hanger,hang,"hanger");
 
     }
 
@@ -129,29 +132,57 @@ public class setting extends OpMode{
             spin = true;
         } catch (Exception p_exception) {
             hang = false;
-            telemetry.addData("spinner:", "not founded");
+            telemetry.addData("spinner", "not founded");
         } finally {
             if (hang) {
-                telemetry.addData("spinner:", "inited");
+                telemetry.addData("spinner", "inited");
             }
         }
     }
 
-    public void check(Map<DcMotor,CRServo> device,boolean flag,String name){
-//        try {
-//
-//            if ( == device)
-//            device = hardwareMap.get(class, name);
-//            spinner.setPower(0);
-//            spin = true;
-//        } catch (Exception p_exception) {
-//            hang = false;
-//            telemetry.addData("spinner:", "not founded");
-//        } finally {
-//            if (hang) {
-//                telemetry.addData("spinner:", "inited");
-//            }
-//        }
+    public void check(DcMotor _device,boolean _flag,String _name){//not tested
+        try {
+            _device = hardwareMap.get(DcMotor.class, _name);
+            _device.setDirection(DcMotorSimple.Direction.FORWARD);
+            _device.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            _flag = true;
+        } catch (Exception p_exception) {
+            _flag = false;
+            telemetry.addData(_device.getDeviceName(), "not founded");
+        } finally {
+            device=_device;
+            flag=_flag;
+            name=_name;
+            if (flag) {
+                telemetry.addData(device.getDeviceName(), "inited");
+            }
+
+        }
+    }
+
+    public void wheels_init(){
+        try {
+            LF = hardwareMap.get(DcMotor.class, "LF");
+            RB = hardwareMap.get(DcMotor.class, "RB");
+            RF = hardwareMap.get(DcMotor.class, "RF");
+            LB = hardwareMap.get(DcMotor.class, "LB");
+            run = true;
+        } catch (Exception p_exception){
+            run = false;
+        } finally {
+            if (run){
+                LF.setDirection(DcMotor.Direction.FORWARD);
+                LB.setDirection(DcMotor.Direction.FORWARD);
+                RF.setDirection(DcMotor.Direction.REVERSE);
+                RB.setDirection(DcMotor.Direction.REVERSE);
+
+            }
+        }
+
+
+
+
+
     }
 
 }

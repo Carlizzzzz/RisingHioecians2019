@@ -60,28 +60,36 @@ import com.qualcomm.robotcore.util.Range;
 public class God extends setting {
     // Declare OpMode members.
 
+    boolean holded =false;
+    final double lap =1145;
+
 
     @Override
     public void init() {
         telemetry.addData("Status", "Start initialize");
 
-
-        LF = hardwareMap.get(DcMotor.class, "LF");
-        RB = hardwareMap.get(DcMotor.class, "RB");
-        RF = hardwareMap.get(DcMotor.class, "RF");
-        LB = hardwareMap.get(DcMotor.class, "LB");
-
-
-        LF.setDirection(DcMotor.Direction.FORWARD);
-        LB.setDirection(DcMotor.Direction.FORWARD);
-        RF.setDirection(DcMotor.Direction.REVERSE);
-        RB.setDirection(DcMotor.Direction.REVERSE);
+        wheels_init();
+//        LF = hardwareMap.get(DcMotor.class, "LF");
+//        RB = hardwareMap.get(DcMotor.class, "RB");
+//        RF = hardwareMap.get(DcMotor.class, "RF");
+//        LB = hardwareMap.get(DcMotor.class, "LB");
+//
+//
+//        LF.setDirection(DcMotor.Direction.FORWARD);
+//        LB.setDirection(DcMotor.Direction.FORWARD);
+//        RF.setDirection(DcMotor.Direction.REVERSE);
+//        RB.setDirection(DcMotor.Direction.REVERSE);
 
 
         UD_init();
         IO_init();
         hang_init();
         hold_init();
+        spin_init();
+
+
+
+        holder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
         telemetry.addData("Status", "Initialized");
@@ -105,6 +113,8 @@ public class God extends setting {
     @Override
     public void loop() {
 
+        double quanter = lap/4;
+        if (run){
         LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -123,7 +133,7 @@ public class God extends setting {
         LF.setPower(LFPower);
         RF.setPower(RFPower);
         LB.setPower(LBPower);
-        RB.setPower(RBPower);
+        RB.setPower(RBPower);}
 
         telemetry.update();
 
@@ -156,24 +166,16 @@ public class God extends setting {
 
         if (hold) {
             if (gamepad1.dpad_up) {
-                holder.setTargetPosition(-550);
-                holder.setPower(0.7);
-            } else if (gamepad1.dpad_left) {
-                if (holder.getCurrentPosition() == -330) {
-                    holder.setPower(0);
-                } else {
-                    holder.setTargetPosition(-330);
-                    holder.setPower(0.7);
-                }
+                holder.setPower(0.5);
             } else if (gamepad1.dpad_down) {
-
-                holder.setTargetPosition(10);
-                holder.setPower(-0.7);
+                holder.setPower(-0.5);
             } else {
                 holder.setPower(0);
             }
             telemetry.addData("holder Value", holder.getCurrentPosition());
+            telemetry.addData("holder power",holder.getPower());
         }
+
 
         if (hang) {
             if (gamepad1.dpad_right) {
@@ -198,11 +200,22 @@ public class God extends setting {
             }
         }
 
-
-        telemetry.addData("LF Value", LF.getCurrentPosition());
+        if (run)
+        {telemetry.addData("LF Value", LF.getCurrentPosition());
         telemetry.addData("LB Value", LB.getCurrentPosition());
         telemetry.addData("RF Value", RF.getCurrentPosition());
-        telemetry.addData("RB Value", RB.getCurrentPosition());
+        telemetry.addData("RB Value", RB.getCurrentPosition());}
+
+        telemetry.addData("run",run);
+        telemetry.addData("UD",UD);
+        telemetry.addData("IO",IO);
+        telemetry.addData("hold",hold);
+        telemetry.addData("hang",hang);
+        telemetry.addData("spin",spin);
+
+
+        telemetry.addData("a",gamepad1.a);
+        telemetry.addData("b",gamepad1.b);
 
 
     }

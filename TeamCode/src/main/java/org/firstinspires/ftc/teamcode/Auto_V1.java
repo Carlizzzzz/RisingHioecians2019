@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -152,7 +153,7 @@ public class Auto_V1 extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
 
-        gyro = hardwareMap.get(BNO055IMU.class, "imu");
+        gyro = hardwareMap.get(BNO055IMU.class, "imu");//hardwareMap.get(AdafruitBNO055IMU.class,"imu");
         LF.setDirection(DcMotor.Direction.FORWARD);
         LB.setDirection(DcMotor.Direction.FORWARD);
         RF.setDirection(DcMotor.Direction.REVERSE);
@@ -163,7 +164,7 @@ public class Auto_V1 extends LinearOpMode {
         hold_init();
         hang_init();
 
-        hanger.setPower(1);
+
 
 
         GoldReconization goldReconization = new GoldReconization(hardwareMap);
@@ -180,45 +181,33 @@ public class Auto_V1 extends LinearOpMode {
         goldPosition = 2;
 
         if (opModeIsActive()) {
+
             if (goldReconization.tfod != null) {
                 goldReconization.tfod.activate();
             }
             while (opModeIsActive()) {
                 autoWheelBase1.compute();
                 if (state == 0) {
-
-                    if (goldReconization.startReconizing(telemetry).equals("Left")) {
-                        goldPosition = 1;
+                        autoWheelBase1.turn(180);
                         state = 1;
-                        goldReconization.endDetect();
-                    } else if (goldReconization.startReconizing(telemetry).equals("Center")) {
-                        goldPosition = 2;
-                        state = 1;
-                        goldReconization.endDetect();
-                    } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
-                        goldPosition = 3;
-                        state = 1;
-                        goldReconization.endDetect();
-                    } else if (getRuntime() - timeCounter > 10) {
-                        goldPosition = 2;
-                        state = 1;
-                    }
                 } else if (state == 1) {
 
-                    hanger.setPower(-1);
+                    //hanger.setPower(-1);
 
                     timeCounter = this.getRuntime();
-
+                    autoWheelBase1.turnUpdate();
                     state = 2;
                 } else if (state == 2) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     if (this.getRuntime() - timeCounter > 2) {
-                        autoWheelBase1.sideway(300);
+                        autoWheelBase1.turn(90);
                         state = 3;
                     }
+                } else if (state == 3){
+                    holder.setPower(-0.5);
                 } else if (state == 3) {
-                    autoWheelBase1.sidewayUpdate();
+                    autoWheelBase1.turnUpdate();
                     //motor1.setPower(.7);
                     //motor2.setPower(.7);
                     if (autoWheelBase1.state == 4) {
@@ -228,7 +217,7 @@ public class Auto_V1 extends LinearOpMode {
                         //motor2.setPower(0.1);
                         resetEncoder();
                         autoWheelBase1.compute();
-                        autoWheelBase1.forward(500);
+                        autoWheelBase1.forward(-3000);
 
                     }
                 }else if (state == 4){
@@ -240,7 +229,7 @@ public class Auto_V1 extends LinearOpMode {
                 }else if (state == 5){
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.sideway(500);
+                    autoWheelBase1.sideway(-500);
                     state = 6;
                 }else if (state == 6){
                     autoWheelBase1.sidewayUpdate();
@@ -295,77 +284,103 @@ public class Auto_V1 extends LinearOpMode {
                     if (autoWheelBase1.state == 4) {
                         state = 11;
                     }
-                } else if (state == 11) {
-                    if (goldPosition==1){//left
-                        resetEncoder();
-                        autoWheelBase1.compute();
-                        autoWheelBase1.turn(60);//anti-clockwise
-                        state = 12;
-                    } else if (goldPosition==2){//centre
-                        resetEncoder();
-                        autoWheelBase1.compute();
-                        autoWheelBase1.turn(90);//anti-clockwise
-                        state = 12;
-                    }  else if (goldPosition==3){//right
-                        resetEncoder();
-                        autoWheelBase1.compute();
-                        autoWheelBase1.turn(150);//anti
-                        state = 12;
-                    }
-                } else if (state == 12) {
-                    autoWheelBase1.turnUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 13;
-                    }
+                } else if(state == 11) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.sideway(500);
+                    state = 12;
+                } else if (state == 12){
+                    autoWheelBase1.sidewayUpdate();
+                    state =13;
                 } else if (state==13){
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.forward(800);
-                    state = 14;
+                    if (goldPosition==1){//left
+                        autoWheelBase1.turn(-45);//anti-clockwise
+                        state = 14;
+                    } else if (goldPosition==2){//centre
+                        autoWheelBase1.turn(-45);//anti-clockwise
+                        state = 14;
+                    }  else if (goldPosition==3){//right
+                        autoWheelBase1.turn(-45);//anti
+                        state = 14;
+                    }
                 } else if (state==14){
-                    autoWheelBase1.forwardUpdate();
+                    autoWheelBase1.turnUpdate();
                     if (autoWheelBase1.state==4){
                         state = 15;
                     }
-                } else if (state == 15) {
-                    //mascot
-                    holder.setTargetPosition(0);
-                    holder.setPower(-1);
-                    state = 16;
-                    timeCounter = getRuntime();
-                } else if (state==16){
-                    //mascot---try to get it out from the pink box
-                    if (this.getRuntime()-timeCounter>2){
+                } else if (state==15) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    if (goldPosition == 1) {//left
+                        autoWheelBase1.forward(-500);//anti-clockwise
+                        state = 16;
+                    } else if (goldPosition == 2) {//centre
+                        autoWheelBase1.forward(0);//anti-clockwise
+                        state = 16;
+                    } else if (goldPosition == 3) {//right
+                        autoWheelBase1.sideway(-500);//anti
+                        state = 16;
+                    }
+                } else if (state == 16) {
+                    if (goldPosition == 1 || goldPosition == 2) {
+                        autoWheelBase1.forwardUpdate();
                         state = 17;
-                        timeCounter=getRuntime();
+                    } else if (goldPosition == 3) {
+                        autoWheelBase1.sidewayUpdate();
+                        state = 17;
                     }
-                } else if (state==17){
-                    //mascot---putted,holder back
-                    if (this.getRuntime()-timeCounter>1){
-                        holder.setTargetPosition(-285);
-                        holder.setPower(1);
-                        state =18;
-                    }
-                } else if (state == 18) {
+//                } else if (state == 15) {
+//                    //mascot
+//                    holder.setTargetPosition(0);
+//                    holder.setPower(-1);
+//                    state = 16;
+//                    timeCounter = getRuntime();
+//                } else if (state==16){
+//                    //mascot---try to get it out from the pink box
+//                    if (this.getRuntime()-timeCounter>2){
+//                        state = 17;
+//                        timeCounter=getRuntime();
+//                    }
+//                } else if (state==17){
+//                    //mascot---putted,holder back
+//                    if (this.getRuntime()-timeCounter>1){
+//                        holder.setTargetPosition(-285);
+//                        holder.setPower(1);
+//                        state =18;
+//                    }
+                } else if (state == 17) {
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.turn(-135);
-                    state = 19;
-                }else if (state == 19){
-                    autoWheelBase1.turnUpdate();
+                    autoWheelBase1.forward(-500);
+                    state = 18;
+                }else if (state == 18){
+                    autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state==4){
-                        state = 20;}
-                } else if (state == 20) {
+                        state = 19;}
+                } else if (state == 19) {
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.forward(-9000);
-                    state = 21;
-                } else if (state == 21) {
+                    autoWheelBase1.forward(500);
+                    state = 20;
+                } else if (state == 20) {
                     autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state == 4) {
-                        state = 22;
-                        timeCounter = getRuntime();
+                        state = 21;
                     }
+                } else if (state == 21) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.sideway(9000);
+                    state = 22;
+                } else if (state == 22) {
+                    autoWheelBase1.sidewayUpdate();
+                    if (autoWheelBase1.state == 4) {
+                        state = 23;
+                    }
+
+
 
 //                }else if (state == 28){
 //                    if (getRuntime() - timeCounter > 1){
