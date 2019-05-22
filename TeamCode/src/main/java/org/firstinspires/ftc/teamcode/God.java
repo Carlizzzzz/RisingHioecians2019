@@ -166,9 +166,11 @@ public class God extends setting {
 
         if (hold) {
             if (gamepad1.dpad_up) {
-                holder.setPower(0.5);
+                holder.setTargetPosition(550);
+                holder.setPower(0.35);
             } else if (gamepad1.dpad_down) {
-                holder.setPower(-0.5);
+                holder.setTargetPosition(10);
+                holder.setPower(-0.35);
             } else {
                 holder.setPower(0);
             }
