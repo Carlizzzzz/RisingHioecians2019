@@ -211,10 +211,11 @@ public class Auto_V1 extends LinearOpMode {
                 telemetry.addData("z: ", autoWheelBase1.getZ());
                 telemetry.addData("position: ", goldReconization.startReconizing(telemetry));
                 telemetry.addData("Position", goldPosition);
-                telemetry.addData("LF", autoWheelBase1.y1);
-                telemetry.addData("LB", autoWheelBase1.y2);
-                telemetry.addData("RF", autoWheelBase1.y3);
-                telemetry.addData("RB", autoWheelBase1.y4);
+                telemetry.addData("LF", LF.getCurrentPosition());
+                telemetry.addData("LB", LB.getCurrentPosition());
+                telemetry.addData("RF", RF.getCurrentPosition());
+                telemetry.addData("RB", RB.getCurrentPosition());
+                telemetry.addData("y1",autoWheelBase1.y1);
                 telemetry.addData("getY", autoWheelBase1.getY());
 
                 telemetry.update();
@@ -225,7 +226,7 @@ public class Auto_V1 extends LinearOpMode {
 //                    hanger.setTargetPosition();
 //                    hanger.setPower(1);
                     timeCounter = getRuntime();//See where the camera will be facing. If camera is already facing the minerals, then it's unnecessary
-                    state = 2;                         // Try your best to avoid using sideway. The error is rather big
+                    state = 0;                         // Try your best to avoid using sideway. The error is rather big
                 } else if (state == 2) {
 //                    autoWheelBase1.forwardUpdate();
                     state = 3;

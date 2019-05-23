@@ -50,8 +50,9 @@ public class test_hold extends setting {
         if (hold) {
             //holder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (gamepad1.dpad_up) {
-                holder.setTargetPosition(550); // Note from Carlix: You may want to use the object "MotorBehavior". MotorBehavior will automatically decelerate the motor when it's near to the target position. So that overshooting can be avoid.
-                holder.setPower(0.5);
+                motorBehavior.setPosition(550); // Note from Carlix: You may want to use the object "MotorBehavior". MotorBehavior will automatically decelerate the motor when it's near to the target position. So that overshooting can be avoid.
+
+
             } else if (gamepad1.dpad_down) {
 
                 motorBehavior.setPosition(100);
