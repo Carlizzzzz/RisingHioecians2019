@@ -166,11 +166,11 @@ public class God extends setting {
 
         if (hold) {
             if (gamepad1.dpad_up) {
-                holder.setTargetPosition(550);
-                holder.setPower(0.35);
+                holder.setTargetPosition(550); // Note from Carlix: You may want to use the object "MotorBehavior". MotorBehavior will automatically decelerate the motor when it's near to the target position. So that overshooting can be avoid.
+                holder.setPower(0.5);
             } else if (gamepad1.dpad_down) {
                 holder.setTargetPosition(10);
-                holder.setPower(-0.35);
+                holder.setPower(-0.5);
             } else {
                 holder.setPower(0);
             }
