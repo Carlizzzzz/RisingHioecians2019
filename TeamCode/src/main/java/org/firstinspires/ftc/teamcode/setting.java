@@ -19,14 +19,16 @@ import com.qualcomm.robotcore.util.Range;
 import java.util.Map;
 
 
-public class setting extends OpMode{
+public class setting extends OpMode {
     // Declare OpMode members.
     public ElapsedTime runtime = new ElapsedTime();
+
+    public BNO055IMU gyro;
     public DcMotor
             device,
             LF, LB, RF, RB,
             UpDown, inout, holder, hanger = null;
-    public boolean UD, IO, hold, hang, spin,run,flag;
+    public boolean UD, IO, hold, hang, spin, run, flag;
     public CRServo spinner;
     public String name;
 
@@ -48,11 +50,12 @@ public class setting extends OpMode{
     @Override
     public void loop() {
     }
+
     @Override
     public void stop() {
     }
 
-    public void UD_init(){
+    public void UD_init() {
         try {
             UpDown = hardwareMap.get(DcMotor.class, "updown");
             UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -71,6 +74,7 @@ public class setting extends OpMode{
 //        UD=flag;
 
     }
+
     public void IO_init() {
         try {
             inout = hardwareMap.get(DcMotor.class, "inout");
@@ -140,7 +144,7 @@ public class setting extends OpMode{
         }
     }
 
-    public void check(DcMotor _device,boolean _flag,String _name){//not tested
+    public void check(DcMotor _device, boolean _flag, String _name) {//not tested
         try {
             _device = hardwareMap.get(DcMotor.class, _name);
             _device.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -150,9 +154,9 @@ public class setting extends OpMode{
             _flag = false;
             telemetry.addData(_device.getDeviceName(), "not founded");
         } finally {
-            device=_device;
-            flag=_flag;
-            name=_name;
+            device = _device;
+            flag = _flag;
+            name = _name;
             if (flag) {
                 telemetry.addData(device.getDeviceName(), "inited");
             }
@@ -160,17 +164,17 @@ public class setting extends OpMode{
         }
     }
 
-    public void wheels_init(){
+    public void wheels_init() {
         try {
             LF = hardwareMap.get(DcMotor.class, "LF");
             RB = hardwareMap.get(DcMotor.class, "RB");
             RF = hardwareMap.get(DcMotor.class, "RF");
             LB = hardwareMap.get(DcMotor.class, "LB");
             run = true;
-        } catch (Exception p_exception){
+        } catch (Exception p_exception) {
             run = false;
         } finally {
-            if (run){
+            if (run) {
                 LF.setDirection(DcMotor.Direction.FORWARD);
                 LB.setDirection(DcMotor.Direction.FORWARD);
                 RF.setDirection(DcMotor.Direction.REVERSE);
@@ -178,11 +182,21 @@ public class setting extends OpMode{
 
             }
         }
-
-
-
-
-
     }
+
+    public void imu_init() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+
+        gyro = hardwareMap.get(BNO055IMU.class, "imu");//hardwareMap.get(AdafruitBNO055IMU.class,"imu");
+        gyro.initialize(parameters);
+    }
+
+
+
 
 }

@@ -67,8 +67,8 @@ public class Auto_V1 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private AutoWheelBase autoWheelBase1;
     private DcMotor LF, LB, RF, RB,
-            UpDown, inout, holder,hanger = null;
-    private boolean UD,IO,hold,hang,spin;
+            UpDown, inout, holder, hanger = null;
+    private boolean UD, IO, hold, hang, spin;
     public CRServo spinner;
     double timeCounter = 0;
 
@@ -121,7 +121,7 @@ public class Auto_V1 extends LinearOpMode {
         }
     }
 
-    public void hang_init(){
+    public void hang_init() {
         try {
             hanger = hardwareMap.get(DcMotor.class, "hanger");
             hanger.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -169,7 +169,6 @@ public class Auto_V1 extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
 
-
         gyro = hardwareMap.get(BNO055IMU.class, "imu");//hardwareMap.get(AdafruitBNO055IMU.class,"imu");
         gyro.initialize(parameters);
         LF.setDirection(DcMotor.Direction.FORWARD);
@@ -181,15 +180,12 @@ public class Auto_V1 extends LinearOpMode {
         IO_init();
         hold_init();
         hang_init();
-        hanger.setPower(-1);
-
-
+//        hanger.setPower(-1);
 
 
         GoldReconization goldReconization = new GoldReconization(hardwareMap);
         autoWheelBase1 = new AutoWheelBase(LF, LB, RF, RB, gyro, 0.6, 0, 0, 0);
         resetEncoder();
-
 
 
         telemetry.addData(">", "Press Play to start tracking");
@@ -199,80 +195,115 @@ public class Auto_V1 extends LinearOpMode {
         state = 1;
         goldPosition = 2;
 
+
         if (opModeIsActive()) {
+
 
             if (goldReconization.tfod != null) {
                 goldReconization.tfod.activate();
             }
             while (opModeIsActive()) {
                 autoWheelBase1.compute();
-                if (state == 1) {                           // Don't forget to put down the robot b4 doing anything!
-                    hanger.setPower(1);
+                telemetry.addData("base state", autoWheelBase1.state);
+                telemetry.addData("state", state);
+                telemetry.addData("s", autoWheelBase1.s);
+                telemetry.addData("sn", autoWheelBase1.sn);
+                telemetry.addData("z: ", autoWheelBase1.getZ());
+                telemetry.addData("position: ", goldReconization.startReconizing(telemetry));
+                telemetry.addData("Position", goldPosition);
+                telemetry.addData("LF", autoWheelBase1.y1);
+                telemetry.addData("LB", autoWheelBase1.y2);
+                telemetry.addData("RF", autoWheelBase1.y3);
+                telemetry.addData("RB", autoWheelBase1.y4);
+                telemetry.addData("getY", autoWheelBase1.getY());
+
+                telemetry.update();
+                if (state == 1) {
+//                    resetEncoder();
+//                    autoWheelBase1.compute();
+//                    autoWheelBase1.forward(1600);
+//                    hanger.setTargetPosition();
+//                    hanger.setPower(1);
                     timeCounter = getRuntime();//See where the camera will be facing. If camera is already facing the minerals, then it's unnecessary
                     state = 2;                         // Try your best to avoid using sideway. The error is rather big
-                } else if(state == 2){
-                    if (goldReconization.startReconizing(telemetry).equals("Left")) {
-                        goldPosition = 1;
-                        goldReconization.endDetect();
-                        state = 3;
-                    } else if (goldReconization.startReconizing(telemetry).equals("Center")) {
-                        goldPosition = 2;
-                        goldReconization.endDetect();
-                        state = 3;
-                    } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
-                        goldPosition = 3;
-                        goldReconization.endDetect();
-                        state = 3;
-                    } else if (timeCounter-this.getRuntime()==3){
-                        state = 3;
-                    }
+                } else if (state == 2) {
+//                    autoWheelBase1.forwardUpdate();
+                    state = 3;
                 } else if (state == 3) {
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.turn(90);
+                    autoWheelBase1.turn(-90);
                     state = 4;
                 } else if (state == 4) {
                     timeCounter = this.getRuntime();
                     autoWheelBase1.turnUpdate();
-                    state = 5;
-                } else if (state == 5){
-                    hanger.setPower(0);
-                    state = 6;
+                    if (autoWheelBase1.state == 4) {
+                        state = 6;
+                    }
+
+//                } else if (state == 5) {
+//                    if (goldReconization.startReconizing(telemetry).equals("Left")) {
+//                        goldPosition = 1;
+//                        goldReconization.endDetect();
+//                        state = 6;
+//                    } else if (goldReconization.startReconizing(telemetry).equals("Center")) {
+//                        goldPosition = 2;
+//                        goldReconization.endDetect();
+//                        state = 6;
+//                    } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
+//                        goldPosition = 3;
+//                        goldReconization.endDetect();
+//                        state = 6;
+//                    }
+//                    hanger.setPower(0);
                 } else if (state == 6) {
+//                    resetEncoder();
+//                    autoWheelBase1.compute();
                     resetEncoder();
                     autoWheelBase1.compute();
-
+                    autoWheelBase1.forward(7500);
                     if (this.getRuntime() - timeCounter > 2) {
-                        holder.setPower(-0.4);
+//                        holder.setPower(-0.4);
                         state = 7;
                     }
-                } else if (state == 7){
-                    resetEncoder();
-                    autoWheelBase1.compute();
-                    autoWheelBase1.turn(1);
+                } else if (state == 7) {
+                    autoWheelBase1.forwardUpdate();
                     state = 8;
+//                } else if (state == 100) {
+//                    resetEncoder();
+//                    autoWheelBase1.compute();
+//                    if (goldPosition == 1) {
+//                        autoWheelBase1.sideway(-1700);
+//                        state = 8;
+//                    } else if (goldPosition == 3) {
+//                        autoWheelBase1.sideway(2000);
+//                        state = 8;
+//                    } else if (goldPosition == 2) {
+//                        autoWheelBase1.sideway(1);
+//                        state = 8;
+//                    }
                 } else if (state == 8) {
-                    autoWheelBase1.turnUpdate();
+                    autoWheelBase1.sidewayUpdate();
                     if (autoWheelBase1.state == 4) {
                         state = 9;
                         holder.setPower(0);
                         resetEncoder();
                         autoWheelBase1.compute();
-                        autoWheelBase1.turn(90);
+                        autoWheelBase1.forward(5000);
 
                     }
-                }else if (state == 9){
-                    autoWheelBase1.turnUpdate();
+                } else if (state == 9) {
+                    autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state == 4) {
                         state = 10;
 
                     }
-                }else if (state == 10){
+                } else if (state == 10) {
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.forward(-700);
+                    autoWheelBase1.forward(1600);
                     state = 11;
-                }else if (state == 11){
+                } else if (state == 11) {
                     autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state == 4) {
                         state = 12;
@@ -298,8 +329,6 @@ public class Auto_V1 extends LinearOpMode {
                     }
 
                 } else if (state == 14) {
-                    resetEncoder();
-                    autoWheelBase1.compute();
                     autoWheelBase1.forward(-900);
                     if (autoWheelBase1.state == 4) {
                         state = 15;
@@ -319,15 +348,17 @@ public class Auto_V1 extends LinearOpMode {
                     if (autoWheelBase1.state == 4) {
                         state = 18;
                     }
-                } else if(state == 18) {
+                } else if (state == 18) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     autoWheelBase1.turn(90);
                     state = 19;
-                } else if (state == 19){
+                } else if (state == 19) {
                     autoWheelBase1.turnUpdate();
-                    state = 20;
-                } else if (state == 20){
+                    if (autoWheelBase1.state == 4) {
+                        state = 20;
+                    }
+                } else if (state == 20) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     if (goldPosition == 1) {
@@ -340,9 +371,9 @@ public class Auto_V1 extends LinearOpMode {
                         autoWheelBase1.forward(-3000);
                         state = 21;
                     }
-                } else if (state == 21){
+                } else if (state == 21) {
                     autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state==4){
+                    if (autoWheelBase1.state == 4) {
                         state = 22;
                     }
                 } else if (state == 22) {
@@ -352,16 +383,20 @@ public class Auto_V1 extends LinearOpMode {
                     state = 23;
                 } else if (state == 23) {
                     autoWheelBase1.forwardUpdate();
-                    state = 24;
+                    if (autoWheelBase1.state == 4) {
+                        state = 24;
+                    }
                 } else if (state == 24) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     autoWheelBase1.turn(-135);
                     state = 25;
-                } else if (state == 25){
+                } else if (state == 25) {
                     autoWheelBase1.turnUpdate();
-                    state = 26;
-                } else if (state == 26){
+                    if (autoWheelBase1.state == 4) {
+                        state = 26;
+                    }
+                } else if (state == 26) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     autoWheelBase1.forward(-2000);
@@ -369,10 +404,11 @@ public class Auto_V1 extends LinearOpMode {
                 } else if (state == 27) {
                     autoWheelBase1.forwardUpdate();
                     state = 28;
-                }else if (state == 28){
+                } else if (state == 28) {
                     spinner.setPower(1);
-                    if (autoWheelBase1.state==4){
-                        state = 29;}
+                    if (autoWheelBase1.state == 4) {
+                        state = 29;
+                    }
                 } else if (state == 29) {
                     resetEncoder();
                     autoWheelBase1.compute();
@@ -396,7 +432,6 @@ public class Auto_V1 extends LinearOpMode {
                     }
 
 
-
 //                }else if (state == 28){
 //                    if (getRuntime() - timeCounter > 1){
 //                        pull.setPower(1);
@@ -409,24 +444,14 @@ public class Auto_V1 extends LinearOpMode {
 //                        openloopLift(0);
 //                    }
 //                }
-                telemetry.addData("base state", autoWheelBase1.state);
-                telemetry.addData("state", state);
-                telemetry.addData("s", autoWheelBase1.s);
-                telemetry.addData("sn", autoWheelBase1.sn);
-                telemetry.addData("z: ", autoWheelBase1.getZ());
-                telemetry.addData("position: ", goldReconization.startReconizing(telemetry));
-                telemetry.addData("Position", goldPosition);
-                telemetry.addData("LF", autoWheelBase1.y1);
-                telemetry.addData("LB", autoWheelBase1.y2);
-                telemetry.addData("RF", autoWheelBase1.y3);
-                telemetry.addData("RB", autoWheelBase1.y4);
-                telemetry.addData("getY", autoWheelBase1.getY());
-                telemetry.update();
-            }
-        }
 
+                }
+
+
+            }
+
+        }
     }
-}
 
 
     public void resetEncoder() {

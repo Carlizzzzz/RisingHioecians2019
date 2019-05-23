@@ -60,8 +60,12 @@ import com.qualcomm.robotcore.util.Range;
 public class God extends setting {
     // Declare OpMode members.
 
+
+
     boolean holded =false;
     final double lap =1145;
+    private  MotorBehavior motorBehavior;
+
 
 
     @Override
@@ -81,6 +85,8 @@ public class God extends setting {
 //        RB.setDirection(DcMotor.Direction.REVERSE);
 
 
+
+
         UD_init();
         IO_init();
         hang_init();
@@ -92,6 +98,11 @@ public class God extends setting {
         holder.setMode(DcMotor.RunMode.RESET_ENCODERS);
 
         hanger.setMode(DcMotor.RunMode.RESET_ENCODERS);
+
+
+        imu_init();
+
+
 
 
         telemetry.addData("Status", "Initialized");
@@ -187,7 +198,7 @@ public class God extends setting {
             if (gamepad1.dpad_right) {
                 if (hanger.getPower() == 0) {
                     hanger.setTargetPosition(550);
-                    hanger.setPower(1);
+                    hanger.setPower(0.7);
                 } else if (hanger.getPower() == 1) {
                     hanger.setTargetPosition(10);
                     hanger.setPower(0);
