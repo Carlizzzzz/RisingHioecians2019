@@ -89,7 +89,9 @@ public class God extends setting {
 
 
 
-        holder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        holder.setMode(DcMotor.RunMode.RESET_ENCODERS);
+
+        hanger.setMode(DcMotor.RunMode.RESET_ENCODERS);
 
 
         telemetry.addData("Status", "Initialized");
@@ -165,6 +167,7 @@ public class God extends setting {
 
 
         if (hold) {
+            holder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (gamepad1.dpad_up) {
                 holder.setTargetPosition(550); // Note from Carlix: You may want to use the object "MotorBehavior". MotorBehavior will automatically decelerate the motor when it's near to the target position. So that overshooting can be avoid.
                 holder.setPower(0.5);
@@ -180,10 +183,13 @@ public class God extends setting {
 
 
         if (hang) {
+            hanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (gamepad1.dpad_right) {
                 if (hanger.getPower() == 0) {
+                    hanger.setTargetPosition(550);
                     hanger.setPower(1);
                 } else if (hanger.getPower() == 1) {
+                    hanger.setTargetPosition(10);
                     hanger.setPower(0);
                 }
             } else {
@@ -202,8 +208,8 @@ public class God extends setting {
             }
         }
 
-        if (run)
-        {telemetry.addData("LF Value", LF.getCurrentPosition());
+        if (run) {
+            telemetry.addData("LF Value", LF.getCurrentPosition());
         telemetry.addData("LB Value", LB.getCurrentPosition());
         telemetry.addData("RF Value", RF.getCurrentPosition());
         telemetry.addData("RB Value", RB.getCurrentPosition());}

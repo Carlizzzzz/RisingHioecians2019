@@ -169,7 +169,9 @@ public class Auto_V1 extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
 
+
         gyro = hardwareMap.get(BNO055IMU.class, "imu");//hardwareMap.get(AdafruitBNO055IMU.class,"imu");
+        gyro.initialize(parameters);
         LF.setDirection(DcMotor.Direction.FORWARD);
         LB.setDirection(DcMotor.Direction.FORWARD);
         RF.setDirection(DcMotor.Direction.REVERSE);
@@ -205,7 +207,8 @@ public class Auto_V1 extends LinearOpMode {
             while (opModeIsActive()) {
                 autoWheelBase1.compute();
                 if (state == 1) {                           // Don't forget to put down the robot b4 doing anything!
-                    hanger.setPower(1);     //See where the camera will be facing. If camera is already facing the minerals, then it's unnecessary
+                    hanger.setPower(1);
+                    timeCounter = getRuntime();//See where the camera will be facing. If camera is already facing the minerals, then it's unnecessary
                     state = 2;                         // Try your best to avoid using sideway. The error is rather big
                 } else if(state == 2){
                     if (goldReconization.startReconizing(telemetry).equals("Left")) {
@@ -219,6 +222,8 @@ public class Auto_V1 extends LinearOpMode {
                     } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
                         goldPosition = 3;
                         goldReconization.endDetect();
+                        state = 3;
+                    } else if (timeCounter-this.getRuntime()==3){
                         state = 3;
                     }
                 } else if (state == 3) {
