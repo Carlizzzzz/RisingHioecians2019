@@ -215,7 +215,7 @@ public class Auto_V1 extends LinearOpMode {
                 telemetry.addData("LB", LB.getCurrentPosition());
                 telemetry.addData("RF", RF.getCurrentPosition());
                 telemetry.addData("RB", RB.getCurrentPosition());
-                telemetry.addData("y1",autoWheelBase1.y1);
+                telemetry.addData("y1", autoWheelBase1.y1);
                 telemetry.addData("getY", autoWheelBase1.getY());
 
                 telemetry.update();
@@ -226,7 +226,7 @@ public class Auto_V1 extends LinearOpMode {
 //                    hanger.setTargetPosition();
 //                    hanger.setPower(1);
                     timeCounter = getRuntime();//See where the camera will be facing. If camera is already facing the minerals, then it's unnecessary
-                    state = 0;                         // Try your best to avoid using sideway. The error is rather big
+                    state = 2;                         // Try your best to avoid using sideway. The error is rather big
                 } else if (state == 2) {
 //                    autoWheelBase1.forwardUpdate();
                     state = 3;
@@ -262,14 +262,16 @@ public class Auto_V1 extends LinearOpMode {
 //                    autoWheelBase1.compute();
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.forward(7500);
-                    if (this.getRuntime() - timeCounter > 2) {
+                    autoWheelBase1.forward(1300);
+//                    if (this.getRuntime() - timeCounter > 2) {
 //                        holder.setPower(-0.4);
-                        state = 7;
-                    }
+                    state = 7;
+                    //}
                 } else if (state == 7) {
                     autoWheelBase1.forwardUpdate();
-                    state = 8;
+                    if (autoWheelBase1.state == 4) {
+                        state = 8;
+                    }
 //                } else if (state == 100) {
 //                    resetEncoder();
 //                    autoWheelBase1.compute();
@@ -404,12 +406,15 @@ public class Auto_V1 extends LinearOpMode {
                     state = 27;
                 } else if (state == 27) {
                     autoWheelBase1.forwardUpdate();
-                    state = 28;
+                    timeCounter=getRuntime();
+                    if (autoWheelBase1.state == 4) {
+                        state = 28;
+                    }
+
                 } else if (state == 28) {
                     spinner.setPower(1);
-                    if (autoWheelBase1.state == 4) {
-                        state = 29;
-                    }
+                    if (timeCounter-this.getRuntime()==2) {
+                        state = 29;}
                 } else if (state == 29) {
                     resetEncoder();
                     autoWheelBase1.compute();
