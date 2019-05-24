@@ -62,9 +62,9 @@ public class God extends setting {
 
 
 
-   int hangerState=0;
+    boolean holderState=false; // false = holding blocks
     final double lap =1145;
-    MotorBehavior hangerBehavior;
+    MotorBehavior holderBehavior;
 
 
 
@@ -94,7 +94,7 @@ public class God extends setting {
         spin_init();
         put_init();
 
-        hangerBehavior = new MotorBehavior(hanger, 0.00015, 0.04, 0.003, 0);
+        holderBehavior = new MotorBehavior(holder, 0.00015, 0.04, 0.003, 0);
 
         holder.setMode(DcMotor.RunMode.RESET_ENCODERS);
 
@@ -178,35 +178,38 @@ public class God extends setting {
 
 
         if (hold) {
-            holder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (gamepad1.dpad_up) {
-                holder.setTargetPosition(550); // Note from Carlix: You may want to use the object "MotorBehavior". MotorBehavior will automatically decelerate the motor when it's near to the target position. So that overshooting can be avoid.
-                holder.setPower(0.5);
+                if(holderState){
+                    holderBehavior.setPosition(2);
+                    holderState=false;
+                }else
+                {
+                    holder.setPower(0.3);
+                    holderState=true;
+                }
             } else if (gamepad1.dpad_down) {
-                holder.setTargetPosition(10);
-                holder.setPower(-0.5);
+               holder.setPower(0.3);
             } else {
                 holder.setPower(0);
             }
             telemetry.addData("holder Value", holder.getCurrentPosition());
             telemetry.addData("holder power",holder.getPower());
         }
+        telemetry.addData("holder yay", holder.getCurrentPosition());
 
 
         if (hang) {
             if (gamepad1.dpad_right) {
-                if (hangerState == 0) {
-                    hangerBehavior.setPosition(550);
-                    hangerState=1;
-                } else if (hangerState == 1) {
-                    hanger.setMode(DcMotor.RunMode.RESET_ENCODERS);
-                    hangerBehavior.setPosition(10);
-                    hangerState=2;
+                if (hanger.getPower() == 0) {
+                    hanger.setTargetPosition(550);
+                    hanger.setPower(1);
+                    hanger.setPower(0.7);
+                } else if (hanger.getPower() == 1) {
+                    hanger.setTargetPosition(10);
+                    hanger.setPower(0);
                 }
-            } else if(hangerState==2) {
-                hanger.setPower(0.3);
-                
-                hangerState=0;
+            } else {
+                hanger.setPower(0);
             }
             telemetry.addData("hanger Value", hanger.getCurrentPosition());
         }
