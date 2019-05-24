@@ -28,8 +28,9 @@ public class setting extends OpMode {
             device,
             LF, LB, RF, RB,
             UpDown, inout, holder, hanger = null;
-    public boolean UD, IO, hold, hang, spin, run, flag;
+    public boolean UD, IO, hold, hang, spin, run, flag,put_able;
     public CRServo spinner;
+    public Servo put;
     public String name;
 
     @Override
@@ -194,6 +195,22 @@ public class setting extends OpMode {
 
         gyro = hardwareMap.get(BNO055IMU.class, "imu");//hardwareMap.get(AdafruitBNO055IMU.class,"imu");
         gyro.initialize(parameters);
+    }
+
+    public void put_init(){
+        try {
+            put = hardwareMap.get(Servo.class,"put");
+            put_able= true;
+        } catch (Exception p_exception){
+            put_able =false;
+            telemetry.addData("put","not found");
+        } finally {
+            if (put_able){
+                telemetry.addData("put","inited");
+                put.setDirection(Servo.Direction.FORWARD);
+            }
+        }
+
     }
 
 

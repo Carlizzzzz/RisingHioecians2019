@@ -22,7 +22,7 @@ public class test_hold extends setting {
 
         holder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        motorBehavior = new MotorBehavior(holder,hanger, 0.6, 0, 0, 0);
+        motorBehavior = new MotorBehavior(holder, 0.6 ,0,0, 0);
 
         runtime.reset();
 

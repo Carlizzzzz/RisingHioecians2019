@@ -62,9 +62,9 @@ public class God extends setting {
 
 
 
-    boolean holded =false;
+   int hangerState=0;
     final double lap =1145;
-    private  MotorBehavior motorBehavior;
+    MotorBehavior hangerBehavior;
 
 
 
@@ -92,12 +92,12 @@ public class God extends setting {
         hang_init();
         hold_init();
         spin_init();
+        put_init();
 
-
+        hangerBehavior = new MotorBehavior(hanger, 0.00015, 0.04, 0.003, 0);
 
         holder.setMode(DcMotor.RunMode.RESET_ENCODERS);
 
-        hanger.setMode(DcMotor.RunMode.RESET_ENCODERS);
 
 
         imu_init();
@@ -110,17 +110,17 @@ public class God extends setting {
 
     }
 
-
-    @Override
-    public void init_loop() {
-
-    }
-
-
-    @Override
-    public void start() {
-        runtime.reset();
-    }
+//
+//    @Override
+//    public void init_loop() {
+//
+//    }
+//
+//
+//    @Override
+//    public void start() {
+//        runtime.reset();
+//    }
 
 
     @Override
@@ -194,17 +194,19 @@ public class God extends setting {
 
 
         if (hang) {
-            hanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (gamepad1.dpad_right) {
-                if (hanger.getPower() == 0) {
-                    hanger.setTargetPosition(550);
-                    hanger.setPower(0.7);
-                } else if (hanger.getPower() == 1) {
-                    hanger.setTargetPosition(10);
-                    hanger.setPower(0);
+                if (hangerState == 0) {
+                    hangerBehavior.setPosition(550);
+                    hangerState=1;
+                } else if (hangerState == 1) {
+                    hanger.setMode(DcMotor.RunMode.RESET_ENCODERS);
+                    hangerBehavior.setPosition(10);
+                    hangerState=2;
                 }
-            } else {
-                hanger.setPower(0);
+            } else if(hangerState==2) {
+                hanger.setPower(0.3);
+                
+                hangerState=0;
             }
             telemetry.addData("hanger Value", hanger.getCurrentPosition());
         }
@@ -217,6 +219,15 @@ public class God extends setting {
             } else {
                 spinner.setPower(0);
             }
+        }
+
+        if (put_able){
+            if(gamepad1.x){
+                put.setPosition(100);
+            } else {
+                put.setPosition(0);
+            }
+            telemetry.addData("put value",put.getPosition());
         }
 
         if (run) {
@@ -233,8 +244,8 @@ public class God extends setting {
         telemetry.addData("spin",spin);
 
 
-        telemetry.addData("a",gamepad1.a);
-        telemetry.addData("b",gamepad1.b);
+        telemetry.addData("hanger",hanger.getCurrentPosition());
+        telemetry.update();
 
 
     }
