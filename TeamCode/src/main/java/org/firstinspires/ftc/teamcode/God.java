@@ -61,11 +61,9 @@ public class God extends setting {
     // Declare OpMode members.
 
 
-
-    boolean holderState=false; // false = holding blocks
-    final double lap =1145;
+    boolean holderState = false; // false = holding blocks
+    final double lap = 1145;
     MotorBehavior holderBehavior;
-
 
 
     @Override
@@ -85,8 +83,6 @@ public class God extends setting {
 //        RB.setDirection(DcMotor.Direction.REVERSE);
 
 
-
-
         UD_init();
         IO_init();
         hang_init();
@@ -94,15 +90,11 @@ public class God extends setting {
         spin_init();
         put_init();
 
+
         holderBehavior = new MotorBehavior(holder, 0.00015, 0.04, 0.003, 0);
-
-        holder.setMode(DcMotor.RunMode.RESET_ENCODERS);
-
 
 
         imu_init();
-
-
 
 
         telemetry.addData("Status", "Initialized");
@@ -126,27 +118,28 @@ public class God extends setting {
     @Override
     public void loop() {
 
-        double quanter = lap/4;
-        if (run){
-        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double quanter = lap / 4;
+        if (run) {
+            LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        double LFPower = gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x;
-        double LBPower = gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x;
-        double RFPower = gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x;
-        double RBPower = gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
+            double LFPower = gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x;
+            double LBPower = gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x;
+            double RFPower = gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x;
+            double RBPower = gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
 
-        LFPower = Range.clip(LFPower, -0.7, 0.7);
-        RFPower = Range.clip(RFPower, -0.7, 0.7);
-        LBPower = Range.clip(LBPower, -0.7, 0.7);
-        RBPower = Range.clip(RBPower, -0.7, 0.7);
+            LFPower = Range.clip(LFPower, -0.7, 0.7);
+            RFPower = Range.clip(RFPower, -0.7, 0.7);
+            LBPower = Range.clip(LBPower, -0.7, 0.7);
+            RBPower = Range.clip(RBPower, -0.7, 0.7);
 
-        LF.setPower(LFPower);
-        RF.setPower(RFPower);
-        LB.setPower(LBPower);
-        RB.setPower(RBPower);}
+            LF.setPower(LFPower);
+            RF.setPower(RFPower);
+            LB.setPower(LBPower);
+            RB.setPower(RBPower);
+        }
 
         telemetry.update();
 
@@ -179,39 +172,29 @@ public class God extends setting {
 
         if (hold) {
             if (gamepad1.dpad_up) {
-                if(holderState){
-                    holderBehavior.setPosition(2);
-                    holderState=false;
-                }else
-                {
-                    holder.setPower(0.3);
-                    holderState=true;
-                }
+                holder.setPower(0.4);
             } else if (gamepad1.dpad_down) {
-               holder.setPower(0.3);
+                holder.setPower(-0.4);
             } else {
                 holder.setPower(0);
             }
             telemetry.addData("holder Value", holder.getCurrentPosition());
-            telemetry.addData("holder power",holder.getPower());
+            telemetry.addData("holder power", holder.getPower());
         }
-        telemetry.addData("holder yay", holder.getCurrentPosition());
 
 
         if (hang) {
             if (gamepad1.dpad_right) {
-                if (hanger.getPower() == 0) {
-                    hanger.setTargetPosition(550);
-                    hanger.setPower(1);
-                    hanger.setPower(0.7);
-                } else if (hanger.getPower() == 1) {
-                    hanger.setTargetPosition(10);
-                    hanger.setPower(0);
-                }
+                hanger.setTargetPosition(550);
+                hanger.setPower(0.7);
+            } else if (gamepad1.dpad_left) {
+                hanger.setTargetPosition(10);
+                hanger.setPower(-0.7);
             } else {
                 hanger.setPower(0);
             }
             telemetry.addData("hanger Value", hanger.getCurrentPosition());
+            telemetry.update();
         }
 
         if (spin) {
@@ -224,30 +207,24 @@ public class God extends setting {
             }
         }
 
-        if (put_able){
-            if(gamepad1.x){
-                put.setPosition(100);
+        if (put_able) {
+            if (gamepad1.x) {
+                put.setPosition(0.36);//0
             } else {
-                put.setPosition(0);
+                put.setPosition(0.74);
             }
-            telemetry.addData("put value",put.getPosition());
+            telemetry.addData("put value", put.getPosition());
         }
 
         if (run) {
             telemetry.addData("LF Value", LF.getCurrentPosition());
-        telemetry.addData("LB Value", LB.getCurrentPosition());
-        telemetry.addData("RF Value", RF.getCurrentPosition());
-        telemetry.addData("RB Value", RB.getCurrentPosition());}
-
-        telemetry.addData("run",run);
-        telemetry.addData("UD",UD);
-        telemetry.addData("IO",IO);
-        telemetry.addData("hold",hold);
-        telemetry.addData("hang",hang);
-        telemetry.addData("spin",spin);
+            telemetry.addData("LB Value", LB.getCurrentPosition());
+            telemetry.addData("RF Value", RF.getCurrentPosition());
+            telemetry.addData("RB Value", RB.getCurrentPosition());
+        }
 
 
-        telemetry.addData("hanger",hanger.getCurrentPosition());
+        telemetry.addData("hanger", hanger.getCurrentPosition());
         telemetry.update();
 
 

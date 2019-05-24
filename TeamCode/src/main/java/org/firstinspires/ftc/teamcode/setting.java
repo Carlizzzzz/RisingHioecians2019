@@ -57,36 +57,38 @@ public class setting extends OpMode {
     }
 
     public void UD_init() {
+        UD = true;
         try {
             UpDown = hardwareMap.get(DcMotor.class, "updown");
-            UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
-            UpDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            UD = true;
+
+
         } catch (Exception p_exception) {
             UD = false;
-            telemetry.addData("Updown", "not founded");
+            telemetry.addData("updown", "not founded");
         } finally {
             if (UD) {
-                telemetry.addData("Updown", "inited");
+                UpDown.setDirection(DcMotorSimple.Direction.FORWARD);
+                UpDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                telemetry.addData("updown", "inited");
             }
         }
-//        check(UpDown,UD,"updown");
-//        UpDown=device;
-//        UD=flag;
+
 
     }
 
     public void IO_init() {
+        IO = true;
         try {
             inout = hardwareMap.get(DcMotor.class, "inout");
-            inout.setDirection(DcMotorSimple.Direction.FORWARD);
-            inout.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            IO = true;
+
+
         } catch (Exception p_exception) {
             IO = false;
             telemetry.addData("inout", "not founded");
         } finally {
             if (IO) {
+                inout.setDirection(DcMotorSimple.Direction.FORWARD);
+                inout.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 telemetry.addData("inout", "inited");
             }
         }
@@ -94,16 +96,17 @@ public class setting extends OpMode {
     }
 
     public void hold_init() {
+        hold = true;
         try {
             holder = hardwareMap.get(DcMotor.class, "holder");
-            holder.setDirection(DcMotorSimple.Direction.FORWARD);
-            holder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hold = true;
+
+
         } catch (Exception p_exception) {
             hold = false;
             telemetry.addData("holder", "not founded");
         } finally {
-            if (hold) {
+            if (hold) {holder.setDirection(DcMotorSimple.Direction.FORWARD);
+                holder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 telemetry.addData("holder", "inited");
             }
         }
@@ -112,17 +115,17 @@ public class setting extends OpMode {
 //        hold=flag;
     }
 
-    public void hang_init() {
+    public void hang_init() {hang = true;
         try {
             hanger = hardwareMap.get(DcMotor.class, "hanger");
-            hanger.setDirection(DcMotorSimple.Direction.FORWARD);
-            hanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hang = true;
+
+
         } catch (Exception p_exception) {
             hang = false;
             telemetry.addData("hanger", "not founded");
         } finally {
-            if (hang) {
+            if (hang) {hanger.setDirection(DcMotorSimple.Direction.FORWARD);
+                hanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 telemetry.addData("hanger", "inited");
             }
         }
@@ -130,48 +133,31 @@ public class setting extends OpMode {
 
     }
 
-    public void spin_init() {
+    public void spin_init() {spin = true;
         try {
             spinner = hardwareMap.get(CRServo.class, "spinner");
-            spinner.setPower(0);
-            spin = true;
+
+
         } catch (Exception p_exception) {
-            hang = false;
+            spin = false;
             telemetry.addData("spinner", "not founded");
         } finally {
-            if (hang) {
+            if (spin) {
+                spinner.setPower(0);
                 telemetry.addData("spinner", "inited");
             }
         }
     }
 
-    public void check(DcMotor _device, boolean _flag, String _name) {//not tested
-        try {
-            _device = hardwareMap.get(DcMotor.class, _name);
-            _device.setDirection(DcMotorSimple.Direction.FORWARD);
-            _device.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            _flag = true;
-        } catch (Exception p_exception) {
-            _flag = false;
-            telemetry.addData(_device.getDeviceName(), "not founded");
-        } finally {
-            device = _device;
-            flag = _flag;
-            name = _name;
-            if (flag) {
-                telemetry.addData(device.getDeviceName(), "inited");
-            }
 
-        }
-    }
 
-    public void wheels_init() {
+    public void wheels_init() {run = true;
         try {
             LF = hardwareMap.get(DcMotor.class, "LF");
             RB = hardwareMap.get(DcMotor.class, "RB");
             RF = hardwareMap.get(DcMotor.class, "RF");
             LB = hardwareMap.get(DcMotor.class, "LB");
-            run = true;
+
         } catch (Exception p_exception) {
             run = false;
         } finally {
@@ -197,10 +183,10 @@ public class setting extends OpMode {
         gyro.initialize(parameters);
     }
 
-    public void put_init(){
+    public void put_init(){put_able= true;
         try {
             put = hardwareMap.get(Servo.class,"put");
-            put_able= true;
+
         } catch (Exception p_exception){
             put_able =false;
             telemetry.addData("put","not found");

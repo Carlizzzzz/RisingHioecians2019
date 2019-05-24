@@ -219,6 +219,29 @@ public class Auto_V1 extends LinearOpMode {
                 telemetry.addData("getY", autoWheelBase1.getY());
 
                 telemetry.update();
+//                if (state==100){
+//                    resetEncoder();
+//                    autoWheelBase1.compute();
+//                    autoWheelBase1.turn(90);
+//                    state=101;
+//                } else if (state==101){
+//                    autoWheelBase1.turnUpdate();
+//                    if (autoWheelBase1.state==4){
+//                        state=102;
+//                    }
+//                } else if (state==102){
+////                    resetEncoder();
+////                    autoWheelBase1.compute();
+//                    autoWheelBase1.turn(45);
+//                    state=103;
+//                } else if (state==103){
+//                    autoWheelBase1.turnUpdate();
+//                    if (autoWheelBase1.state==4){
+//                        state=0;
+//                    }
+//                }
+
+
                 if (state == 1) {
 //                    resetEncoder();
 //                    autoWheelBase1.compute();
@@ -229,6 +252,7 @@ public class Auto_V1 extends LinearOpMode {
                     state = 2;                         // Try your best to avoid using sideway. The error is rather big
                 } else if (state == 2) {
 //                    autoWheelBase1.forwardUpdate();
+                    autoWheelBase1.state=1;
                     state = 3;
                 } else if (state == 3) {
                     resetEncoder();
@@ -239,23 +263,23 @@ public class Auto_V1 extends LinearOpMode {
                     timeCounter = this.getRuntime();
                     autoWheelBase1.turnUpdate();
                     if (autoWheelBase1.state == 4) {
-                        state = 6;
+                        state = 5;
                     }
 
-//                } else if (state == 5) {
-//                    if (goldReconization.startReconizing(telemetry).equals("Left")) {
-//                        goldPosition = 1;
-//                        goldReconization.endDetect();
-//                        state = 6;
-//                    } else if (goldReconization.startReconizing(telemetry).equals("Center")) {
-//                        goldPosition = 2;
-//                        goldReconization.endDetect();
-//                        state = 6;
-//                    } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
-//                        goldPosition = 3;
-//                        goldReconization.endDetect();
-//                        state = 6;
-//                    }
+                } else if (state == 5) {
+                    if (goldReconization.startReconizing(telemetry).equals("Left")) {
+                        goldPosition = 1;
+                        goldReconization.endDetect();
+                        state = 6;
+                    } else if (goldReconization.startReconizing(telemetry).equals("Center")) {
+                        goldPosition = 2;
+                        goldReconization.endDetect();
+                        state = 6;
+                    } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
+                        goldPosition = 3;
+                        goldReconization.endDetect();
+                        state = 6;
+                    }
 //                    hanger.setPower(0);
                 } else if (state == 6) {
 //                    resetEncoder();
@@ -272,170 +296,134 @@ public class Auto_V1 extends LinearOpMode {
                     if (autoWheelBase1.state == 4) {
                         state = 8;
                     }
-//                } else if (state == 100) {
-//                    resetEncoder();
-//                    autoWheelBase1.compute();
-//                    if (goldPosition == 1) {
-//                        autoWheelBase1.sideway(-1700);
-//                        state = 8;
-//                    } else if (goldPosition == 3) {
-//                        autoWheelBase1.sideway(2000);
-//                        state = 8;
-//                    } else if (goldPosition == 2) {
-//                        autoWheelBase1.sideway(1);
-//                        state = 8;
-//                    }
                 } else if (state == 8) {
-                    autoWheelBase1.sidewayUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 9;
-                        holder.setPower(0);
-                        resetEncoder();
-                        autoWheelBase1.compute();
-                        autoWheelBase1.forward(5000);
-
-                    }
-                } else if (state == 9) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 10;
-
-                    }
-                } else if (state == 10) {
-                    resetEncoder();
-                    autoWheelBase1.compute();
-                    autoWheelBase1.forward(1600);
-                    state = 11;
-                } else if (state == 11) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 12;
-
-                    }
-                } else if (state == 12) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     if (goldPosition == 1) {
-                        autoWheelBase1.sideway(-1300);
-                        state = 13;
+                        autoWheelBase1.sideway(-1700);
+                        state = 9;
                     } else if (goldPosition == 3) {
                         autoWheelBase1.sideway(2000);
-                        state = 13;
+                        state = 9;
                     } else if (goldPosition == 2) {
-                        autoWheelBase1.sideway(200);
-                        state = 13;
+                        autoWheelBase1.sideway(1);
+                        state = 9;
                     }
-                } else if (state == 13) {
+                } else if (state == 9) {
                     autoWheelBase1.sidewayUpdate();
                     if (autoWheelBase1.state == 4) {
-                        state = 14;
-                    }
+                        state = 10;
+//                        holder.setPower(0);
+                        resetEncoder();
+                        autoWheelBase1.compute();
+                        autoWheelBase1.forward(1200);
 
+                    }
+                } else if (state == 10) {
+                    autoWheelBase1.forwardUpdate();
+                    if (autoWheelBase1.state == 4) {
+                        state = 11;
+
+                    }
+                } else if (state == 11) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.forward(-1200);
+                    state = 12;
+                } else if (state == 12) {
+                    autoWheelBase1.forwardUpdate();
+                    if (autoWheelBase1.state == 4) {
+                        state = 13;
+
+                    }
+                } else if (state == 13) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.turn(-180);
+                    state = 14;
                 } else if (state == 14) {
-                    autoWheelBase1.forward(-900);
+//                    timeCounter = this.getRuntime();
+                    autoWheelBase1.turnUpdate();
                     if (autoWheelBase1.state == 4) {
                         state = 15;
                     }
                 } else if (state == 15) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 16;
-                    }
-                } else if (state == 16) {
-                    resetEncoder();
-                    autoWheelBase1.compute();
-                    autoWheelBase1.forward(900);
-                    state = 17;
-                } else if (state == 17) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 18;
-                    }
-                } else if (state == 18) {
-                    resetEncoder();
-                    autoWheelBase1.compute();
-                    autoWheelBase1.turn(90);
-                    state = 19;
-                } else if (state == 19) {
-                    autoWheelBase1.turnUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 20;
-                    }
-                } else if (state == 20) {
                     resetEncoder();
                     autoWheelBase1.compute();
                     if (goldPosition == 1) {
-                        autoWheelBase1.forward(-4000);
-                        state = 21;
+                        autoWheelBase1.forward(7500);
+                        state = 16;
                     } else if (goldPosition == 3) {
-                        autoWheelBase1.forward(-3500);
-                        state = 21;
+                        autoWheelBase1.forward(7000);
+                        state = 16;
                     } else if (goldPosition == 2) {
-                        autoWheelBase1.forward(-3000);
+                        autoWheelBase1.forward(6500);
+                        state = 16;
+                    }
+                } else if (state == 16) {
+                    autoWheelBase1.forwardUpdate();
+                    if (autoWheelBase1.state == 4) {
+                        state = 17;
+                    }
+
+                } else if (state == 17) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.forward(-50);
+                    state = 18;
+                } else if (state == 18) {
+                    autoWheelBase1.forwardUpdate();
+                    if (autoWheelBase1.state == 4) {
+                        state = 19;
+                    }
+                } else if (state == 19) {
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.turn(-225);
+                    state = 20;
+                } else if (state == 20) {
+                    autoWheelBase1.turnUpdate();
+                    if (autoWheelBase1.state == 4) {
                         state = 21;
                     }
                 } else if (state == 21) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 22;
-                    }
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.sideway(300);
+//                    holder.setPower(-0.3);
+
+                    state = 22;
                 } else if (state == 22) {
+                    autoWheelBase1.sidewayUpdate();
+                    if (autoWheelBase1.state == 4) {
+//                        holder.setPower(0);
+                        state = 23;
+                    }
+                } else if (state == 23) {
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.forward(300);
-                    state = 23;
-                } else if (state == 23) {
+                    autoWheelBase1.forward(-5000);//go to mascot place
+                    state = 24;
+                } else if (state == 24) {
                     autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state == 4) {
-                        state = 24;
+                        state = 25;
                     }
-                } else if (state == 24) {
-                    resetEncoder();
-                    autoWheelBase1.compute();
-                    autoWheelBase1.turn(-135);
-                    state = 25;
                 } else if (state == 25) {
-                    autoWheelBase1.turnUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 26;
-                    }
+//                    spinner.setPower(-0.5);//mascot
+                    state = 26;
                 } else if (state == 26) {
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.forward(-2000);
+//                    spinner.setPower(0);
+                    autoWheelBase1.forward(9000);
                     state = 27;
                 } else if (state == 27) {
                     autoWheelBase1.forwardUpdate();
-                    timeCounter=getRuntime();
-                    if (autoWheelBase1.state == 4) {
+                    if (autoWheelBase1.state == 4){
                         state = 28;
                     }
-
-                } else if (state == 28) {
-                    spinner.setPower(1);
-                    if (timeCounter-this.getRuntime()==2) {
-                        state = 29;}
-                } else if (state == 29) {
-                    resetEncoder();
-                    autoWheelBase1.compute();
-                    autoWheelBase1.forward(0);
-                    spinner.setPower(0);
-                    state = 30;
-                } else if (state == 30) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 31;
-                    }
-                } else if (state == 31) {
-                    resetEncoder();
-                    autoWheelBase1.compute();
-                    autoWheelBase1.forward(9000);
-                    state = 32;
-                } else if (state == 32) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
-                        state = 33;
-                    }
+                }
 
 
 //                }else if (state == 28){
@@ -457,7 +445,7 @@ public class Auto_V1 extends LinearOpMode {
             }
 
         }
-    }
+
 
 
     public void resetEncoder() {
