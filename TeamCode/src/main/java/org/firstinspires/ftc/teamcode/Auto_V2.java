@@ -255,31 +255,31 @@ public class Auto_V2 extends LinearOpMode {
                     autoWheelBase1.state=1;
                     state = 3;
                 } else if (state == 3) {
+                    if (goldReconization.startReconizing(telemetry).equals("Left")) {
+                        goldPosition = 1;
+                        goldReconization.endDetect();
+                        state = 4;
+                    } else if (goldReconization.startReconizing(telemetry).equals("Center")) {
+                        goldPosition = 2;
+                        goldReconization.endDetect();
+                        state = 4;
+                    } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
+                        goldPosition = 3;
+                        goldReconization.endDetect();
+                        state = 4;
+                    }
+                } else if (state == 4) {
+                    timeCounter = this.getRuntime();
                     resetEncoder();
                     autoWheelBase1.compute();
                     autoWheelBase1.turn(-90);
-                    state = 4;
-                } else if (state == 4) {
-                    timeCounter = this.getRuntime();
+                    state = 5;
+                } else if (state == 5) {
                     autoWheelBase1.turnUpdate();
                     if (autoWheelBase1.state == 4) {
                         state = 5;
                     }
 
-                } else if (state == 5) {
-                    if (goldReconization.startReconizing(telemetry).equals("Left")) {
-                        goldPosition = 1;
-                        goldReconization.endDetect();
-                        state = 6;
-                    } else if (goldReconization.startReconizing(telemetry).equals("Center")) {
-                        goldPosition = 2;
-                        goldReconization.endDetect();
-                        state = 6;
-                    } else if (goldReconization.startReconizing(telemetry).equals("Right")) {
-                        goldPosition = 3;
-                        goldReconization.endDetect();
-                        state = 6;
-                    }
 //                    hanger.setPower(0);
                 } else if (state == 6) {
 //                    resetEncoder();
@@ -402,26 +402,39 @@ public class Auto_V2 extends LinearOpMode {
                 } else if (state == 23) {
                     resetEncoder();
                     autoWheelBase1.compute();
-                    autoWheelBase1.forward(-5000);//go to mascot place
+                    holder.setPower(-0.4);
+                    autoWheelBase1.sideway(-50);
                     state = 24;
-                } else if (state == 24) {
-                    autoWheelBase1.forwardUpdate();
-                    if (autoWheelBase1.state == 4) {
+                } else if (state == 24){
+                    autoWheelBase1.sidewayUpdate();
+                    holder.setPower(0);
+                    if (autoWheelBase1.state == 4){
                         state = 25;
                     }
                 } else if (state == 25) {
-//                    spinner.setPower(-0.5);//mascot
+                    resetEncoder();
+                    autoWheelBase1.compute();
+                    autoWheelBase1.forward(-5000);//go to mascot place
                     state = 26;
                 } else if (state == 26) {
+                    autoWheelBase1.forwardUpdate();
+                    spinner.setPower(-0.5);
+                    if (autoWheelBase1.state == 4) {
+                        state = 27;
+                    }
+                } else if (state == 27) {
+                    spinner.setPower(0);
+                    state = 28;
+                } else if (state == 28) {
                     resetEncoder();
                     autoWheelBase1.compute();
 //                    spinner.setPower(0);
                     autoWheelBase1.forward(9000);
-                    state = 27;
-                } else if (state == 27) {
+                    state = 29;
+                } else if (state == 29) {
                     autoWheelBase1.forwardUpdate();
                     if (autoWheelBase1.state == 4){
-                        state = 28;
+                        state = 30;
                     }
                 }
 

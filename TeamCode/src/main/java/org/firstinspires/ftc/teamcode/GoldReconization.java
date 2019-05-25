@@ -40,7 +40,7 @@ public class GoldReconization {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.FRONT;
+        parameters.cameraDirection = CameraDirection.BACK;
 
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 

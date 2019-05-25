@@ -118,7 +118,7 @@ public class God extends setting {
     @Override
     public void loop() {
 
-        double quanter = lap / 4;
+        double quarter = lap / 4;
         if (run) {
             LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -145,13 +145,13 @@ public class God extends setting {
 
 
         if (UD) {
-            if (gamepad1.left_bumper) {  //Up
-//            UpDown.setTargetPosition(-5400);
+            if (gamepad1.left_bumper) {//Up
+                UpDown.setTargetPosition(-2000);
                 UpDown.setPower(1);
             } else if (gamepad1.right_bumper) { //down
-//            UpDown.setTargetPosition(-100);
+                UpDown.setTargetPosition(9500);
                 UpDown.setPower(-1);
-            } else {
+            } else{
                 UpDown.setPower(0);
             }
             telemetry.addData("updown Value", UpDown.getCurrentPosition());
@@ -159,12 +159,12 @@ public class God extends setting {
 
 
         if (IO) {
-            if (gamepad1.left_trigger > 0.5) {  //in
+            if (gamepad1.right_trigger > 0.5) {  //in
+                inout.setTargetPosition(-2740);
                 inout.setPower(1);
-            } else if (gamepad1.right_trigger > 0.5) { //out
+            } else if (gamepad1.left_trigger > 0.5) { //out
+                inout.setTargetPosition(-100);
                 inout.setPower(-1);
-            } else {
-                inout.setPower(0);
             }
             telemetry.addData("inout Value", inout.getCurrentPosition());
         }
@@ -183,45 +183,41 @@ public class God extends setting {
         }
 
 
-        if (hang) {
+        if (hang) {//not yet finish
             if (gamepad1.dpad_right) {
-                hanger.setTargetPosition(550);
-                hanger.setPower(0.7);
+                hanger.setTargetPosition(-1750);
+                hanger.setPower(1);
             } else if (gamepad1.dpad_left) {
-                hanger.setTargetPosition(10);
-                hanger.setPower(-0.7);
-            } else {
-                hanger.setPower(0);
+                hanger.setTargetPosition(0);
+                hanger.setPower(-1);
             }
             telemetry.addData("hanger Value", hanger.getCurrentPosition());
             telemetry.update();
         }
 
         if (spin) {
-            if (gamepad1.b) {
-                spinner.setPower(1);
-            } else if (gamepad1.a) {
+            if (gamepad1.a) {
                 spinner.setPower(-1);
-            } else {
-                spinner.setPower(0);
+            } else if (gamepad1.b) {
+                spinner.setPower(1);
             }
         }
 
         if (put_able) {
             if (gamepad1.x) {
-                put.setPosition(0.36);//0
+                put.setPosition(0);//0.36//.2
             } else {
-                put.setPosition(0.74);
+                put.setPosition(1);//0.74
             }
             telemetry.addData("put value", put.getPosition());
         }
 
-        if (run) {
-            telemetry.addData("LF Value", LF.getCurrentPosition());
-            telemetry.addData("LB Value", LB.getCurrentPosition());
-            telemetry.addData("RF Value", RF.getCurrentPosition());
-            telemetry.addData("RB Value", RB.getCurrentPosition());
-        }
+//        if (run) {
+//            telemetry.addData("LF Value", LF.getCurrentPosition());
+//            telemetry.addData("LB Value", LB.getCurrentPosition());
+//            telemetry.addData("RF Value", RF.getCurrentPosition());
+//            telemetry.addData("RB Value", RB.getCurrentPosition());
+//        }
 
 
         telemetry.addData("hanger", hanger.getCurrentPosition());
